@@ -19,7 +19,7 @@ export class AcGameObject {
     destroy() {//销毁
         this.on_destroy();
 
-        for (index in AC_GAME_OBJECTS) {
+        for (let index in AC_GAME_OBJECTS) {
             const obj = AC_GAME_OBJECTS[index]
             if (obj === this) {
                 AC_GAME_OBJECTS.splice(index);
@@ -32,7 +32,7 @@ export class AcGameObject {
 let last_timestamp;//上一次的时间戳
 
 const step = timestamp => {
-    for (index in AC_GAME_OBJECTS) {
+    for (let index in AC_GAME_OBJECTS) {
         const obj = AC_GAME_OBJECTS[index];
         if (obj.has_called_start === false) {
             obj.has_called_start = true;
