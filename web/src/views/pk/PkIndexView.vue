@@ -1,14 +1,12 @@
 <template >
-    <content-area-vue>
-        对战
-    </content-area-vue>
+    <play-ground-vue/>
 </template>
 <script>
-import ContentAreaVue from '@/components/ContentAreaVue.vue'
+import PlayGroundVue from '@/components/PlayGroundVue.vue'
 export default {
     name: 'PkIndexView',
     components: {
-        ContentAreaVue
+        PlayGroundVue,
     }
 }
 </script>
