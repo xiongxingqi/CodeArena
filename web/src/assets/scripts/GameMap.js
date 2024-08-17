@@ -18,7 +18,7 @@ export class GameMap extends AcGameObject {
 
     }
     update_size() {
-        this.L = Math.min(this.parent.clientWidth / this.cols, this.parent.clientHeight / this.rows);
+        this.L = parseInt(Math.min(this.parent.clientWidth / this.cols, this.parent.clientHeight / this.rows));//转换为int类型防止因浮点造成渲染的方块之间有间隙
         this.ctx.canvas.width = this.L * this.cols;
         this.ctx.canvas.height = this.L * this.rows;
     }
@@ -31,7 +31,7 @@ export class GameMap extends AcGameObject {
         const color_even = "#a2d149"; const color_odd = "#aad751";
         for (let r = 0; r < this.rows; r++) {
             for (let c = 0; c < this.cols; c++) {
-                if ((r + c) % 2) {
+                if ((r + c) % 2 === 0) {
                     this.ctx.fillStyle = color_odd;
                 } else {
                     this.ctx.fillStyle = color_even;
