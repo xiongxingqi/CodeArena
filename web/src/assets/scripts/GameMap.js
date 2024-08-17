@@ -15,6 +15,19 @@ export class GameMap extends AcGameObject {
         this.walls = [];
     }
 
+    check_connectivity(g, sx, sy, ex, ey) {
+        if (sx === ex && sy === ey) return true;
+        g[sx][sy] = true;
+
+        let dx = [0, 1, 0, -1], dy = [1, 0, -1, 0];
+        for (let i = 0; i < 4; i++) {
+            let x = sx + dx[i], y = sy + dy[i];
+            if (!g[x][y] && this.check_connectivity(g, x, y, ex, ey)) return true;
+        }
+        return false;
+    }
+
+
     create_walls() {
         const g = [];//创建地图某个位置是否生成墙的二维数组
         for (let r = 0; r < this.rows; r++) {
@@ -34,10 +47,14 @@ export class GameMap extends AcGameObject {
                 let row = parseInt(Math.random() * this.rows);
                 let col = parseInt(Math.random() * this.cols);
                 if (g[row][col] || g[col][row]) continue;
+                if (row === this.rows - 2 && col === 1 || row === 1 && col === this.cols - 2) continue;
                 g[row][col] = g[col][row] = true;
                 break;
             }
         }
+        //检查左下角是否与右上角是否开连通
+        const g_copy = JSON.parse(JSON.stringify(g));
+        if (!this.check_connectivity(g_copy, this.rows - 2, 1, 1, this.cols - 2)) return false;
 
         for (let r = 0; r < this.rows; r++) {
             for (let c = 0; c < this.cols; c++) {
@@ -46,10 +63,13 @@ export class GameMap extends AcGameObject {
                 }
             }
         }
+
+        return true;
     }
 
     start() {
-        this.create_walls();
+        for (let i = 0; i < 1000; i++)
+            if (this.create_walls()) break;
     }
     update_size() {
         this.L = parseInt(Math.min(this.parent.clientWidth / this.cols, this.parent.clientHeight / this.rows));//转换为int类型防止因浮点造成渲染的方块之间有间隙
