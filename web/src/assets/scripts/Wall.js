@@ -13,9 +13,9 @@ export class Wall extends AcGameObject {
     }
 
     update() {
-
-
+        this.reader();
     }
+
 
     reader() {
         const L = this.game_map.L;
