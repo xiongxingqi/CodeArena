@@ -9,9 +9,9 @@ export class GameMap extends AcGameObject {
         this.L = 0;
 
         this.rows = 13;
-        this.cols = 13;
+        this.cols = 14;
 
-        this.inner_walls_count = 30;
+        this.inner_walls_count = 20;
         this.walls = [];
     }
 
@@ -46,9 +46,9 @@ export class GameMap extends AcGameObject {
             for (let j = 0; j < 1000; j++) {
                 let row = parseInt(Math.random() * this.rows);
                 let col = parseInt(Math.random() * this.cols);
-                if (g[row][col] || g[col][row]) continue;
+                if (g[row][col] || g[this.rows - row - 1][this.cols - col - 1]) continue;
                 if (row === this.rows - 2 && col === 1 || row === 1 && col === this.cols - 2) continue;
-                g[row][col] = g[col][row] = true;
+                g[row][col] = g[this.rows - row - 1][this.cols - col - 1] = true;
                 break;
             }
         }
