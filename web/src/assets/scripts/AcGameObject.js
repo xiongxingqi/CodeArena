@@ -32,6 +32,7 @@ export class AcGameObject {
 let last_timestamp;//上一次的时间戳
 
 const step = timestamp => {
+    // console.log(timestamp - last_timestamp);
     for (let index in AC_GAME_OBJECTS) {
         const obj = AC_GAME_OBJECTS[index];
         if (obj.has_called_start === false) {
