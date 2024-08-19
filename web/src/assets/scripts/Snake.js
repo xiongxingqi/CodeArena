@@ -97,6 +97,22 @@ export class Snake extends AcGameObject {
             ctx.arc(cell.x * L, cell.y * L, L * 0.5, 0, Math.PI * 2);
             ctx.fill();
         }
+
+        for (let i = 1; i < this.cells.length; i++) {
+            const a = this.cells[i], b = this.cells[i - 1];
+            if (Math.abs(a.x - b.x) < this.eps && Math.abs(a.y - b.y) < this.eps) continue;
+            else if (Math.abs(a.x - b.x) < this.eps) {
+                let min_y = Math.min(a.y, b.y);
+                let min_x = a.x - 0.5;
+                ctx.fillRect(min_x * L, min_y * L, L, Math.abs(a.y - b.y) * L);
+            } else if (Math.abs(a.y - b.y) < this.eps) {
+                let min_x = Math.min(a.x, b.x);
+                let min_y = a.y - 0.5;
+                ctx.fillRect(min_x * L, min_y * L, Math.abs(a.x - b.x) * L, L);
+            }
+
+        }
+
     }
 
 }
