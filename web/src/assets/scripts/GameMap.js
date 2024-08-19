@@ -81,10 +81,35 @@ export class GameMap extends AcGameObject {
     next_step() {
         for (let snake of this.snakes) snake.next_step();
     }
+    add_controller_event() {
+        this.ctx.canvas.focus();
+        const [snake1, snake2] = this.snakes;
+        this.ctx.canvas.addEventListener("keydown", e => {
+            let key = e.key;
+            if (key === "w") {
+                snake1.set_direction(0);
+            } else if (key === "d") {
+                snake1.set_direction(1);
+            } else if (key === "s") {
+                snake1.set_direction(2);
+            } else if (key === "a") {
+                snake1.set_direction(3);
+            } else if (key === "ArrowUp") {
+                snake2.set_direction(0);
+            } else if (key === "ArrowRight") {
+                snake2.set_direction(1);
+            } else if (key === "ArrowDown") {
+                snake2.set_direction(2);
+            } else if (key === "ArrowLeft") {
+                snake2.set_direction(3);
+            }
+        });
+    }
 
     start() {
         for (let i = 0; i < 1000; i++)
             if (this.create_walls()) break;
+        this.add_controller_event();
     }
     update_size() {
         this.L = parseInt(Math.min(this.parent.clientWidth / this.cols, this.parent.clientHeight / this.rows));//转换为int类型防止因浮点造成渲染的方块之间有间隙
