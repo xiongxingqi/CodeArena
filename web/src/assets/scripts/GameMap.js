@@ -16,8 +16,8 @@ export class GameMap extends AcGameObject {
         this.walls = [];
 
         this.snakes = [
-            new Snake({ id: 0, color: '#f94848', r: this.rows - 2, c: 1, direction: 1 }, this),
-            new Snake({ id: 1, color: '#4876ec', r: 1, c: this.cols - 2, direction: 3 }, this),
+            new Snake({ id: 0, color: '#f94848', r: this.rows - 2, c: 1 }, this),
+            new Snake({ id: 1, color: '#4876ec', r: 1, c: this.cols - 2 }, this),
         ];
     }
 
@@ -74,7 +74,7 @@ export class GameMap extends AcGameObject {
     }
     check_ready() {
         for (let snake of this.snakes) {
-            if (snake.status != "idle") return false;
+            if (snake.direction === -1 || snake.status !== "idle") return false;
         }
         return true;
     }
