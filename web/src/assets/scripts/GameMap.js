@@ -72,6 +72,15 @@ export class GameMap extends AcGameObject {
 
         return true;
     }
+    check_ready() {
+        for (let snake of this.snakes) {
+            if (snake.status != "idle") return false;
+        }
+        return true;
+    }
+    next_step() {
+        for (let snake of this.snakes) snake.next_step();
+    }
 
     start() {
         for (let i = 0; i < 1000; i++)
@@ -84,6 +93,7 @@ export class GameMap extends AcGameObject {
     }
     update() {
         this.update_size();
+        if (this.check_ready()) this.next_step();
         this.reader();
     }
 

@@ -27,14 +27,38 @@ export class Snake extends AcGameObject {
 
     }
 
+    next_step() {
+
+        this.status = "move";
+        this.round++;
+        this.next_cell = new Cell(this.cells[0].r + this.dr[this.direction], this.cells[0].c + this.dc[this.direction]);
+        let k = this.cells.length;
+        // console.log(this.next_cell.r, this.next_cell.c);
+
+        // console.log(k);
+        for (let i = k; i > 0; i--) this.cells[i] = JSON.parse(JSON.stringify(this.cells[i - 1]));
+    }
     update_move() {
-        let move_size = this.speed * this.time_delta / 1000;
-        this.cells[0].x = this.cells[0].x + this.dc[this.direction] * move_size;
-        this.cells[0].y = this.cells[0].y + this.dr[this.direction] * move_size;
+        let dx = this.next_cell.x - this.cells[0].x;
+        let dy = this.next_cell.y - this.cells[0].y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < this.eps) {
+            this.cells[0] = this.next_cell;
+            this.status = "idle";
+            this.next_cell = null;
+        } else {
+            let move_size = this.speed * this.time_delta / 1000;
+            this.cells[0].x = this.cells[0].x + move_size * dx / distance;
+            this.cells[0].y = this.cells[0].y + move_size * dy / distance;
+            // let move_size = this.speed * this.time_delta / 1000;
+            // this.cells[0].x = this.cells[0].x + this.dc[this.direction] * move_size;
+            // this.cells[0].y = this.cells[0].y + this.dr[this.direction] * move_size;
+        }
+
 
     }
     update() {
-        this.update_move();
+        if (this.status === "move") this.update_move();
         this.reader();
 
     }
