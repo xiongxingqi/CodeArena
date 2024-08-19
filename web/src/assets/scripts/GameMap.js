@@ -33,6 +33,21 @@ export class GameMap extends AcGameObject {
         return false;
     }
 
+    check_valid(cell) {
+        for (let i = 0; i < this.walls.length; i++) {
+            if (cell.r === this.walls[i].r && cell.c === this.walls[i].c) return false;
+        }
+
+        for (let snake of this.snakes) {
+            let k = snake.cells.length;
+            if (!snake.check_tail_increasing) k--;
+            for (let i = 0; i < k; i++) {
+                if (cell.r === snake.cells[i].r && cell.c === snake.cells[i].c) return false;
+            }
+        }
+        return true;
+    }
+
 
     create_walls() {
         const g = [];//创建地图某个位置是否生成墙的二维数组
