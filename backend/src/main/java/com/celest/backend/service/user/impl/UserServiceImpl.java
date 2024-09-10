@@ -10,8 +10,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public String getToken(String username, String password) {
 
-
-
         return null;
     }
 }

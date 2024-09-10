@@ -8,3 +8,18 @@ spring:
     password: 123456
 server:
   port: 3000
+springdoc:
+  swagger-ui:
+    path: /doc.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: "Service Interface"
+      packages-to-scan: com.celest.backend.controller
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+

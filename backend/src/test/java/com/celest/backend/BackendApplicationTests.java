@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
 
-//@SpringBootTest
+@SpringBootTest
 class BackendApplicationTests {
 
     @Test
