@@ -39,5 +39,6 @@ public class CorsConfig implements Filter {
 
     @Override
     public void destroy() {
+        Filter.super.destroy();
     }
 }
