@@ -3,13 +3,15 @@ package com.celest.backend.utils.result;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
+import java.util.Map;
+
 @Data
 public class Result<T> implements Serializable {
     private int code;
     private String errorMessage;
     private T data;
 
-    public static <T> @NotNull Result<T> success(){
+    public static <T> @NotNull Result<T> success(Map<String, Object> token){
         Result<T> res = new Result<>();
         res.setCode(1);
         return res;
