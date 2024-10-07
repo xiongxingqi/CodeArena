@@ -11,7 +11,7 @@ public class Result<T> implements Serializable {
     private String errorMessage;
     private T data;
 
-    public static <T> @NotNull Result<T> success(Map<String, Object> token){
+    public static <T> @NotNull Result<T> success(){
         Result<T> res = new Result<>();
         res.setCode(1);
         return res;

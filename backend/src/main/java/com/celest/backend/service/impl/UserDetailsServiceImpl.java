@@ -22,6 +22,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         QueryWrapper<User> userQuery = Wrappers.query(User.class).eq("username", username);
         User user = userMapper.selectOne(userQuery);
-        return new UserDetailsImpl(user);
+        long end = System.currentTimeMillis();
+        return user!=null ? new UserDetailsImpl(user):null;
     }
 }

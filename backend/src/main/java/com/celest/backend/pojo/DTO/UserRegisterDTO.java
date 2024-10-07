@@ -10,10 +10,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Schema(name = "用户注册的DTO",requiredProperties = {"username","password"})
+@Schema(name = "用户注册的DTO",requiredProperties = {"username","password","confirmedPassword"})
 public class UserRegisterDTO {
-    @Schema(name = "用户名")
+    @Schema(description = "用户名")
     private String username;
-    @Schema(name = "用户密码")
+    @Schema(description = "用户密码")
     private String password;
+    @Schema(description = "确认密码")
+    private String confirmedPassword;
+
 }

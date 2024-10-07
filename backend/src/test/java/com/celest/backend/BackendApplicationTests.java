@@ -1,8 +1,10 @@
 package com.celest.backend;
 
+import cn.hutool.jwt.JWTUtil;
+import com.celest.backend.config.properties.JwtProperties;
 import com.celest.backend.pojo.entity.User;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.encrypt.BytesEncryptor;
@@ -11,11 +13,16 @@ import org.springframework.security.crypto.keygen.KeyGenerators;
 import org.springframework.security.crypto.keygen.StringKeyGenerator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.io.Serial;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @SpringBootTest
 class BackendApplicationTests {
 
+    @Autowired
+    private JwtProperties jwtProperties;
     @Test
     void contextLoads() {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -53,5 +60,30 @@ class BackendApplicationTests {
         return user;
     }
 
+    @Test
+    public void textPasswordEncoder(){
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10);
+        System.out.println(encoder.encode("123456"));
+
+    }
+    @Test
+    public void testJwt(){
+        Map<String, Object> map = new HashMap<>() {
+            @Serial
+            private static final long serialVersionUID = 1L;
+
+            {
+                put("uid", Integer.parseInt("123"));
+                put("expire_time", System.currentTimeMillis() + jwtProperties.getExpireTime());
+            }
+        };
+
+        String token = JWTUtil.createToken(map, jwtProperties.getSecretKey().getBytes());
+
+        JWTUtil.parseToken(token);
+
+        boolean verify = JWTUtil.verify(token, jwtProperties.getSecretKey().getBytes());
+
+    }
 
 }
