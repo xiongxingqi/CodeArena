@@ -5,7 +5,7 @@
 </template>
 <script>
 import { onMounted, ref } from 'vue';
-import {GameMap} from '../assets/scripts/GameMap.js';
+import {GameMap} from '@/assets/scripts/GameMap';
 export default {
     name: 'GameMap',
     setup(){

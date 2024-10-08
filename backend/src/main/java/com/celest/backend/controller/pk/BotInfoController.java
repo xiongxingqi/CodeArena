@@ -15,7 +15,7 @@ public class BotInfoController {
         Map<String,String> bot=new HashMap<>();
         bot.put("name","tiger");
         bot.put("rating","1500");
-
+        System.out.println("66666");
         return bot;
      }
 
