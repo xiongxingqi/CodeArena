@@ -17,8 +17,7 @@ export default {
         password: password.value,
         success(){
           store.dispatch("getInfo",{
-            success(resp){
-              alert('success:'+resp.data.code);
+            success(){
               router.push({name: 'home'});
             },
             error(resp){
