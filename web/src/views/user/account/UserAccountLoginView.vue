@@ -18,7 +18,8 @@ export default {
         success(){
           store.dispatch("getInfo",{
             success(resp){
-              alert('success:'+resp.data.code)
+              alert('success:'+resp.data.code);
+              router.push({name: 'home'});
             },
             error(resp){
               if (resp.status=== 401) {

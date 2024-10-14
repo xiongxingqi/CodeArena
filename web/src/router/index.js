@@ -6,42 +6,64 @@ import RecordListIndexView from '@/views/record/RecordListIndexView.vue';
 import UserBotIndexView from '@/views/user/bot/UserBotIndexView.vue'
 import UserAccountLoginView from "@/views/user/account/UserAccountLoginView.vue";
 import UserAccountRegisterView from "@/views/user/account/UserAccountRegisterView.vue";
+import store from "@/store";
 
 const routes = [
   {
     path: '/',
     name: 'home',
     redirect: { name: 'pk' },
+    meta: {
+      requiredAuth: true
+    }
   },
   {
     path: '/pk',
     name: 'pk',
     component: PkIndexView,
+    meta: {
+      requiredAuth: true
+    }
   },
   {
     path: '/rankList',
     name: 'rank-list',
     component: RankListIndexView,
+    meta: {
+      requiredAuth: true
+    }
   },
   {
     path: '/record',
     name: 'record',
     component: RecordListIndexView,
+    meta: {
+      requiredAuth: true
+    }
   },
   {
     path: '/user/account/login',
     name: 'user-account-login',
-    component: UserAccountLoginView
+    component: UserAccountLoginView,
+    meta: {
+      requiredAuth: false
+    }
   },
   {
     path: '/user/account/register',
     name: 'user-account-register',
-    component: UserAccountRegisterView
+    component: UserAccountRegisterView,
+    meta: {
+      requiredAuth: false
+    }
   },
   {
     path: '/userBots',
     name: 'user-bots',
     component: UserBotIndexView,
+    meta: {
+      requiredAuth: true
+    }
   },
   {
     path: '/:matchAll(.*)',
@@ -56,4 +78,11 @@ const router = createRouter({
   routes
 })
 
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiredAuth &&store.state.user.is_login === false) {
+    next({name: "user-account-login"});
+  }else {
+    next();
+  }
+})
 export default router
