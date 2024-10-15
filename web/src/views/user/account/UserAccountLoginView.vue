@@ -10,12 +10,27 @@ export default {
     const username=ref('');
     const password=ref('');
     const error_message=ref('');
+    const token = localStorage.getItem('token');
+    if(token){
+      store.commit('updateToken',token);
+      store.dispatch('getInfo',{
+        success(){
+          router.push({name: 'home'});
+        },
+        error(resp){
+          if(resp.status!==401) {
+            alert("服务器内部错误");
+          }
+        }
+      });
+    }
     const login =() =>{
       error_message.value='';
       store.dispatch('login',{
         username: username.value,
         password: password.value,
-        success(){
+        success(resp){
+          localStorage.setItem("token", resp.data.data.token);
           store.dispatch("getInfo",{
             success(){
               router.push({name: 'home'});

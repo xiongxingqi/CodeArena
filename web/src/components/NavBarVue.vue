@@ -58,7 +58,11 @@ export default {
     setup(){
       const store =useStore()
       const logout = () =>{
-        store.dispatch('logout');
+        store.dispatch('logout',{
+          success(){
+            localStorage.removeItem("token");
+          }
+        });
         router.push({name: 'home'});
       }
       return {

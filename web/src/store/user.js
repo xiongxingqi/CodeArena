@@ -1,5 +1,4 @@
 import axios from "axios";
-
 export default {
     state: {
         id: '',
@@ -28,7 +27,7 @@ export default {
                 password: data.password,
             }).then( resp =>{
                     context.commit("updateToken",resp.data.data.token);
-                    data.success();
+                    data.success(resp);
             }).catch(error =>{
                 if(error.status=== 403) {
                     data.error({errorMessage: '用户名或密码错误'});
@@ -53,7 +52,7 @@ export default {
                 data.error(error);
             })
         },
-        logout(context){
+        logout(context,data){
             context.commit('updateToken','');
             context.commit('updateUser',{
                 username: '',
@@ -61,6 +60,7 @@ export default {
                 photo: '',
                 is_login: false
             })
+            data.success();
         }
     },
     modules: {
