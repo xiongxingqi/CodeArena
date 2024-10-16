@@ -5,7 +5,8 @@ export default {
         username: '',
         photo: '',
         token: '',
-        is_login: false
+        is_login: false,
+        accessToInformation: true
     },
     getters: {
     },
@@ -18,6 +19,9 @@ export default {
         },
         updateToken(state,token){
             state.token=token;
+        },
+        updateAccessToInformation(state,update){
+            state.accessToInformation=update;
         }
     },
     actions: {

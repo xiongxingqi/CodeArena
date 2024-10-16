@@ -16,13 +16,17 @@ export default {
       store.dispatch('getInfo',{
         success(){
           router.push({name: 'home'});
+          store.commit('updateAccessToInformation',false);
         },
         error(resp){
           if(resp.status!==401) {
             alert("服务器内部错误");
           }
+          store.commit("updateAccessToInformation",false);
         }
       });
+    }else {
+      store.commit('updateAccessToInformation',false);
     }
     const login =() =>{
       error_message.value='';

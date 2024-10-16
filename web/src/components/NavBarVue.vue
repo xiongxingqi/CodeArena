@@ -37,7 +37,7 @@
                     </ul>
                 </li>
             </ul>
-              <ul class="navbar-nav mb-2 mb-lg-0" v-else>
+              <ul class="navbar-nav mb-2 mb-lg-0" v-else-if="!$store.state.user.accessToInformation">
                 <li class="nav-item ">
                   <router-link class="nav-link" :to="{name: 'user-account-login'}">登录</router-link>
                 </li>
