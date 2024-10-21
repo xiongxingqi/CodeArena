@@ -27,7 +27,7 @@ public class UserAccountController {
 
     @PostMapping("/token")
     @Operation(summary = "用户登录接口",description = "对用户进行认证,发放jwtToken")
-    public Result<TokenVO> login(@RequestBody UserLoginDto userLoginDto){
+    public Result<TokenVO> login(@RequestBody @RequestParam UserLoginDto userLoginDto){
 
         log.info("用户:{}进行登录认证",userLoginDto.username);
 
