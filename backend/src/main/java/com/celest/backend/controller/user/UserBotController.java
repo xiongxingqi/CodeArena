@@ -31,5 +31,17 @@ public class UserBotController {
         botService.insertBot(botDto);
         return Result.success();
     }
+    @DeleteMapping("/remove")
+    public Result<?> removeBot(Integer id){
+        log.info("用户删除bot");
+        botService.deleteBot(id);
+        return Result.success();
+    }
+    @PostMapping("/update")
+    public Result<?> modifyBot(@RequestBody Bot bot){
+        log.info("修改bot,bot的id为:{}",bot.getId());
+        botService.updateBot(bot);
+        return Result.success();
+    }
 
 }

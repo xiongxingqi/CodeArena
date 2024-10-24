@@ -26,7 +26,7 @@ public class BotServiceImpl implements BotService {
     public List<Bot> getBotList() {
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userDetails.getUser();
-        LambdaQueryWrapper<Bot> eq = Wrappers.<Bot>lambdaQuery().eq(Bot::getId, user.getId());
+        LambdaQueryWrapper<Bot> eq = Wrappers.<Bot>lambdaQuery().eq(Bot::getUserId, user.getId());
 
         return botMapper.selectList(eq);
     }
@@ -46,6 +46,37 @@ public class BotServiceImpl implements BotService {
         //持久化bot
         botMapper.insert(bot);
 
+    }
+
+    @Override
+    public void deleteBot(Integer id) throws BaseException{
+
+        botParameterVerification(id);
+
+        botMapper.deleteById(id);
+    }
+
+    @Override
+    public void updateBot(Bot bot) {
+        botParameterVerification(bot.getId());
+        parameterVerification(bot.getTitle(),bot.getDescription(),bot.getContent());
+        botMapper.updateById(bot);
+
+    }
+
+    private void botParameterVerification(Integer id)throws BaseException {
+        if (id == null) {
+            throw new BaseException("bot的id不能为空");
+        }
+        Bot bot = botMapper.selectById(id);
+        if (bot == null) {
+            throw new BaseException("该bot不存在");
+        }
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userDetails.getUser();
+        if (!bot.getUserId().equals(user.getId())) {
+            throw new BaseException("偷偷做坏事,你要删除不属于你的bot");
+        }
     }
 
     private static void parameterVerification(String title, String description, String content) throws BaseException{

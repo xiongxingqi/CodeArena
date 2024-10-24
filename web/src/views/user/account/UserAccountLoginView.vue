@@ -3,8 +3,14 @@ import ContentAreaVue from "@/components/ContentAreaVue.vue";
 import {ref} from "vue";
 import {useStore} from "vuex";
 import router from "@/router";
+import store from "@/store";
 export default {
   name: "UserAccountLoginView",
+  computed: {
+    store() {
+      return store
+    }
+  },
   setup(){
     const store=useStore()
     const username=ref('');
@@ -68,8 +74,8 @@ export default {
 </script>
 
 <template>
-  <ContentAreaVue>
-    <div class="row justify-content-md-center">
+  <ContentAreaVue v-if="!$store.state.user.accessToInformation">
+    <div class="row justify-content-md-center" >
       <div class="col-md-3">
         <form @submit.prevent="login">
           <div class="mb-3">

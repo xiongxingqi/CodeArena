@@ -9,4 +9,9 @@ public interface BotService {
     List<Bot> getBotList();
 
     void insertBot(BotDto botDto);
+
+    void deleteBot(Integer id);
+
+    void updateBot(Bot bot);
+
 }

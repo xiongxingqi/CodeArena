@@ -23,6 +23,6 @@ public class Bot {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date modify_Time;
+    private Date modifyTime;
 
 }

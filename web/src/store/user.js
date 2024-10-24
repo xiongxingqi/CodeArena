@@ -50,7 +50,7 @@ export default {
                     ...(resp.data.data),
                     is_login: true
                 });
-                console.log(JSON.stringify(resp))
+                // console.log(JSON.stringify(resp))
                 data.success(resp);
             }).catch(error => {
                 data.error(error);
