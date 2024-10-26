@@ -60,6 +60,7 @@ public class BotServiceImpl implements BotService {
     public void updateBot(Bot bot) {
         botParameterVerification(bot.getId());
         parameterVerification(bot.getTitle(),bot.getDescription(),bot.getContent());
+        bot.setModifyTime(new Date());
         botMapper.updateById(bot);
 
     }
