@@ -10,7 +10,19 @@ export default {
     getters: {
     },
     mutations: {
-
+        updateOpponent(state,opponent){
+            state.opponent_photo = opponent.photo;
+            state.opponent_username = opponent.username;
+        },
+        updateSocket(state,socket){
+            state.socket = socket;
+        },
+        updateStatus(state,status){
+            state.status = status;
+        },
+        updateGameMap(state,gameMap){
+            state.gameMap =  gameMap;
+        }
     },
     actions: {
 
