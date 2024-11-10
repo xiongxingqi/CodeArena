@@ -68,7 +68,7 @@ public class SecurityConfig {
 //        source.registerCorsConfiguration("/**", configuration);
 //        return source;
 //    }
-
+    // 配置访问路径,防止springSecurity拦截websocket路径
 //    @Bean
 //    public WebSecurityCustomizer webSecurityCustomizer(){
 //        return (web) -> web.ignoring().requestMatchers("/websocket/**");

@@ -1,5 +1,10 @@
 package com.celest.backend.comsumer;
 
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import cn.hutool.jwt.JWT;
+import cn.hutool.jwt.JWTPayload;
+import cn.hutool.jwt.JWTUtil;
 import com.celest.backend.mapper.UserMapper;
 import com.celest.backend.pojo.entity.User;
 import jakarta.websocket.*;
@@ -33,9 +38,12 @@ public class WebSocketServer {
         // 建立连接
         System.out.println("connect!");
         this.session = session;
-        Integer userId = Integer.parseInt(token);
+        JWT jwt = JWTUtil.parseToken(token);
+        JSONObject claims = jwt.getPayload().getClaimsJson();
+        Integer userId = claims.get("uid", Integer.class);
         this.user = userMapper.selectById(userId);
         users.put(user.getId(),this);
+        System.out.println(user);
 
     }
 
