@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -44,7 +45,7 @@ public class SecurityConfig {
                 .sessionManagement(((sessionManager)-> sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)))
                 .authorizeHttpRequests(authorizationRequests -> authorizationRequests
                         //配置访问权限
-                        .requestMatchers("/user/account/token", "/user/account/register","/doc.html","/swagger-ui/**","/v3/**","/error").permitAll()
+                        .requestMatchers("/user/account/token", "/user/account/register","/doc.html","/swagger-ui/**","/v3/**","/error","/websocket/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling((httpSecurityExceptionHandlingConfigurer ->
@@ -68,5 +69,9 @@ public class SecurityConfig {
 //        return source;
 //    }
 
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer(){
+//        return (web) -> web.ignoring().requestMatchers("/websocket/**");
+//    }
 
 }
