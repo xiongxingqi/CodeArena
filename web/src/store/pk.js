@@ -6,6 +6,7 @@ export default {
         opponent_username: "",
         opponent_photo: "",
         gameMap: null,
+
     },
     getters: {
     },

@@ -28,16 +28,24 @@
 <script>
 
 import {ref} from "vue";
+import {useStore} from "vuex";
 
 export default {
   setup(){
     const match_btn_info = ref('开始匹配');
+    const store = useStore();
 
     const click_match_btn = () =>{
       if (match_btn_info.value === '开始匹配') {
         match_btn_info.value = '取消';
+        store.state.pk.socket.send(JSON.stringify({
+          event: "start_match"
+        }))
       } else if(match_btn_info.value === '取消'){
         match_btn_info.value = '开始匹配';
+        store.state.pk.socket.send(JSON.stringify({
+          event: 'stop_match'
+        }));
       }
     }
     return {

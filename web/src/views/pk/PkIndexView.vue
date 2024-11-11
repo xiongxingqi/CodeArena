@@ -25,6 +25,8 @@ export default {
         });
         socket=new WebSocket(socketUrl);
 
+        store.commit("updateSocket",socket);
+
         socket.onopen = () => {
           console.log("connected!")
 
@@ -32,6 +34,15 @@ export default {
         socket.onmessage= (msg) =>{
           const message = JSON.parse(msg.data);
           console.log(message)
+          if (message.event === 'match_success') {
+            store.commit("updateOpponent",{
+              username: message.opponent_username,
+              photo: message.opponent_photo
+            })
+            setTimeout(()=>{
+              store.commit("updateStatus","playing");
+            },2000)
+          }
         }
         socket.onclose = () =>{
           console.log("closed!")
@@ -39,6 +50,7 @@ export default {
       });
       onUnmounted(()=>{
         socket.close();
+        store.commit("updateStatus","matching");
       })
     }
 }

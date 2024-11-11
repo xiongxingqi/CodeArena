@@ -10,15 +10,15 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                 <!-- <a class="nav-link active" aria-current="page" href="/pk">对战</a> -->
-                <router-link class="nav-link active" aria-current="page" :to="{name: 'pk'}">对战</router-link>
+                <router-link :class="$route.name === 'pk' ?'nav-link active': 'nav-link'" aria-current="page" :to="{name: 'pk'}">对战</router-link>
                 </li>
                 <li class="nav-item">
                 <!-- <a class="nav-link" href="/record">对战记录</a> -->
-                <router-link class="nav-link" :to="{name: 'record'}">对战记录</router-link>
+                <router-link :class="$route.name === 'record'?'nav-link active': 'nav-link' " :to="{name: 'record'}">对战记录</router-link>
                 </li>
                 <li class="nav-item">
                 <!-- <a class="nav-link" href="/rankList">排行榜</a> -->
-                <router-link class="nav-link" :to="{name: 'rank-list'}">排行榜</router-link>
+                <router-link :class="$route.name === 'rank-list'? 'nav-link active': 'nav-link'" :to="{name: 'rank-list'}">排行榜</router-link>
                 </li>
             </ul>
 
@@ -52,11 +52,10 @@
 <script>
 import {useStore} from "vuex";
 import router from "@/router";
-
 export default {
     name: "NavBarVue",
     setup(){
-      const store =useStore()
+      const store =useStore();
       const logout = () =>{
         store.dispatch('logout',{
           success(){
