@@ -2,11 +2,13 @@ import { Wall } from "./Wall";
 import { AcGameObject } from "./AcGameObject";
 import { Snake } from "./Snake";
 export class GameMap extends AcGameObject {
-    constructor(ctx, parent) {
+    constructor(ctx, parent,store) {
         super();
 
+        this.store = store;
         this.ctx = ctx;
         this.parent = parent;
+
         this.L = 0;
 
         this.rows = 13;
@@ -19,18 +21,6 @@ export class GameMap extends AcGameObject {
             new Snake({ id: 0, color: '#f94848', r: this.rows - 2, c: 1 }, this),
             new Snake({ id: 1, color: '#4876ec', r: 1, c: this.cols - 2 }, this),
         ];
-    }
-
-    check_connectivity(g, sx, sy, ex, ey) {
-        if (sx === ex && sy === ey) return true;
-        g[sx][sy] = true;
-
-        let dx = [0, 1, 0, -1], dy = [1, 0, -1, 0];
-        for (let i = 0; i < 4; i++) {
-            let x = sx + dx[i], y = sy + dy[i];
-            if (!g[x][y] && this.check_connectivity(g, x, y, ex, ey)) return true;
-        }
-        return false;
     }
 
     check_valid(cell) {
@@ -50,33 +40,8 @@ export class GameMap extends AcGameObject {
 
 
     create_walls() {
-        const g = [];//创建地图某个位置是否生成墙的二维数组
-        for (let r = 0; r < this.rows; r++) {
-            g[r] = [];
-            for (let c = 0; c < this.cols; c++) {
-                g[r][c] = false;
-            }
-        }
-        //填充左右外边界
-        for (let r = 0; r < this.rows; r++) g[r][0] = g[r][this.cols - 1] = true;
-
-        for (let c = 0; c < this.cols; c++) g[0][c] = g[this.rows - 1][c] = true;
-
-        //随机生成内部墙
-        for (let i = 0; i < this.inner_walls_count / 2; i++) {
-            for (let j = 0; j < 1000; j++) {
-                let row = parseInt(Math.random() * this.rows);
-                let col = parseInt(Math.random() * this.cols);
-                if (g[row][col] || g[this.rows - row - 1][this.cols - col - 1]) continue;
-                if (row === this.rows - 2 && col === 1 || row === 1 && col === this.cols - 2) continue;
-                g[row][col] = g[this.rows - row - 1][this.cols - col - 1] = true;
-                break;
-            }
-        }
-        //检查左下角是否与右上角是否开连通
-        const g_copy = JSON.parse(JSON.stringify(g));
-        if (!this.check_connectivity(g_copy, this.rows - 2, 1, 1, this.cols - 2)) return false;
-
+        const g = this.store.state.pk.game_map;
+        
         for (let r = 0; r < this.rows; r++) {
             for (let c = 0; c < this.cols; c++) {
                 if (g[r][c]) {
@@ -122,8 +87,7 @@ export class GameMap extends AcGameObject {
     }
 
     start() {
-        for (let i = 0; i < 1000; i++)
-            if (this.create_walls()) break;
+        this.create_walls();
         this.add_controller_event();
     }
     update_size() {

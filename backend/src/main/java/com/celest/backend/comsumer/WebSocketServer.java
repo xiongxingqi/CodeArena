@@ -6,6 +6,7 @@ import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTUtil;
 import com.celest.backend.mapper.UserMapper;
 import com.celest.backend.pojo.entity.User;
+import com.celest.backend.utils.game.GameMap;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
@@ -95,17 +96,24 @@ public class WebSocketServer {
             matchPool.remove(playerTwo);
             matchPool.remove(playerOne);
 
+            GameMap gameMap= new GameMap(13,14,20);
+
+            gameMap.createMap();
+
             JSONObject resA = new JSONObject();
             resA.set("event","match_success");
             resA.set("opponent_username",playerOne.getUsername());
             resA.set("opponent_photo",playerOne.getPhoto());
+            resA.set("game_map",gameMap.getMap());
             users.get(playerTwo.getId()).sendMessage(resA.toString());
 
             JSONObject resB = new JSONObject();
             resB.set("event","match_success");
             resB.set("opponent_username",playerTwo.getUsername());
             resB.set("opponent_photo",playerTwo.getPhoto());
+            resB.set("game_map",gameMap.getMap());
             users.get(playerOne.getId()).sendMessage(resB.toString());
+            System.out.println("match_success");
 
         }
 

@@ -42,6 +42,7 @@ export default {
             setTimeout(()=>{
               store.commit("updateStatus","playing");
             },2000)
+            store.commit("updateGameMap",message.game_map);
           }
         }
         socket.onclose = () =>{
