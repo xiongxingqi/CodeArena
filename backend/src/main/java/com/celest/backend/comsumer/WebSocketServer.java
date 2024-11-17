@@ -6,7 +6,8 @@ import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTUtil;
 import com.celest.backend.mapper.UserMapper;
 import com.celest.backend.pojo.entity.User;
-import com.celest.backend.utils.game.GameMap;
+import com.celest.backend.utils.game.Game;
+import com.celest.backend.utils.game.Player;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
@@ -28,9 +29,12 @@ public class WebSocketServer {
 
     private Session session;
 
+
     private User user;
 
     private static UserMapper userMapper;
+
+    private  Game game;
 
     @Autowired
     public void setUserMapper(UserMapper userMapper) {
@@ -67,6 +71,14 @@ public class WebSocketServer {
         }
     }
 
+    private void move(Integer direction){
+        if(game.getPlayerA().getId().equals(user.getId())){
+            game.setNextstepA(direction);
+        }else if(game.getPlayerB().getId().equals(user.getId())){
+            game.setNextstepB(direction);
+        }
+    }
+
     @OnMessage
     public void onMessage(String message, Session session) {
         // 从Client接收消息
@@ -76,6 +88,9 @@ public class WebSocketServer {
             startMatch();
         }else if(event.equals("stop_match")){
             stopMatch();
+        }else if(event.equals("move")){
+            System.out.println("move");
+            move(info.getInt("direction"));
         }
 
     }
@@ -96,24 +111,36 @@ public class WebSocketServer {
             matchPool.remove(playerTwo);
             matchPool.remove(playerOne);
 
-            GameMap gameMap= new GameMap(13,14,20);
+            Game game = new Game(13,14,20,playerOne.getId(),playerTwo.getId());
 
-            gameMap.createMap();
+            game.createMap();
+            WebSocketServer.users.get(playerOne.getId()).game = game;
+            WebSocketServer.users.get(playerTwo.getId()).game = game;
+
+            JSONObject respGame = new JSONObject();
+            respGame.set("a_id",game.getPlayerA().getId());
+            respGame.set("a_sx",game.getPlayerA().getSx());
+            respGame.set("a_sy",game.getPlayerA().getSy());
+            respGame.set("b_id",game.getPlayerB().getId());
+            respGame.set("b_sx",game.getPlayerB().getSx());
+            respGame.set("b_sy",game.getPlayerB().getSy());
+            respGame.set("game_map",game.getMap());
 
             JSONObject resA = new JSONObject();
             resA.set("event","match_success");
             resA.set("opponent_username",playerOne.getUsername());
             resA.set("opponent_photo",playerOne.getPhoto());
-            resA.set("game_map",gameMap.getMap());
+            resA.set("game", respGame);
             users.get(playerTwo.getId()).sendMessage(resA.toString());
 
             JSONObject resB = new JSONObject();
             resB.set("event","match_success");
             resB.set("opponent_username",playerTwo.getUsername());
             resB.set("opponent_photo",playerTwo.getPhoto());
-            resB.set("game_map",gameMap.getMap());
+            resB.set("game", respGame);
             users.get(playerOne.getId()).sendMessage(resB.toString());
             System.out.println("match_success");
+            game.start();
 
         }
 

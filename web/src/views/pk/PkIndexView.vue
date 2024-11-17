@@ -34,21 +34,40 @@ export default {
         socket.onmessage= (msg) =>{
           const message = JSON.parse(msg.data);
           console.log(message)
+          //匹配成功
           if (message.event === 'match_success') {
             store.commit("updateOpponent",{
               username: message.opponent_username,
               photo: message.opponent_photo
             })
+            //对战见面路由
             setTimeout(()=>{
               store.commit("updateStatus","playing");
-            },2000)
-            store.commit("updateGameMap",message.game_map);
+            },100)
+            //更新玩家信息
+            store.commit("updateGameMap",message.game);
+          }else if(message.event === "move"){
+
+            const [snakeA,snakeB] = store.state.pk.game_object.snakes;
+            snakeA.set_direction(message.a_direction);
+            snakeB.set_direction(message.b_direction);
+
+          }else if(message.event === "result"){
+            const [snakeA,snakeB] = store.state.pk.game_object.snakes;
+            if(message.loser === "All"|| message.loser === "A" ){
+              snakeA.status = "die";
+            }
+            if(message.loser === "All" || message.loser === "B"){
+              snakeB.status = "die";
+            }
+            store.commit("updateLoser",message.loser);
           }
         }
         socket.onclose = () =>{
           console.log("closed!")
         }
       });
+      //切换页面的逻辑
       onUnmounted(()=>{
         socket.close();
         store.commit("updateStatus","matching");

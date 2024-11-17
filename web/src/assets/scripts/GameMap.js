@@ -40,8 +40,9 @@ export class GameMap extends AcGameObject {
 
 
     create_walls() {
+
         const g = this.store.state.pk.game_map;
-        
+
         for (let r = 0; r < this.rows; r++) {
             for (let c = 0; c < this.cols; c++) {
                 if (g[r][c]) {
@@ -63,26 +64,33 @@ export class GameMap extends AcGameObject {
     }
     add_controller_event() {
         this.ctx.canvas.focus();
-        const [snake1, snake2] = this.snakes;
         this.ctx.canvas.addEventListener("keydown", e => {
             let key = e.key;
+            const socket = this.store.state.pk.socket;
+            let direction = 0;
             if (key === "w") {
-                snake1.set_direction(0);
+                direction = 0;
             } else if (key === "d") {
-                snake1.set_direction(1);
+                direction = 1;
             } else if (key === "s") {
-                snake1.set_direction(2);
+                direction = 2;
             } else if (key === "a") {
-                snake1.set_direction(3);
-            } else if (key === "ArrowUp") {
-                snake2.set_direction(0);
-            } else if (key === "ArrowRight") {
-                snake2.set_direction(1);
-            } else if (key === "ArrowDown") {
-                snake2.set_direction(2);
-            } else if (key === "ArrowLeft") {
-                snake2.set_direction(3);
+                direction = 3;
             }
+
+            socket.send(JSON.stringify({
+                event: "move",
+                direction
+            }))
+            // } else if (key === "ArrowUp") {
+            //     snake2.set_direction(0);
+            // } else if (key === "ArrowRight") {
+            //     snake2.set_direction(1);
+            // } else if (key === "ArrowDown") {
+            //     snake2.set_direction(2);
+            // } else if (key === "ArrowLeft") {
+            //     snake2.set_direction(3);
+            // }
         });
     }
 
