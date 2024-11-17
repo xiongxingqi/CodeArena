@@ -45,7 +45,7 @@ export class Snake extends AcGameObject {
     check_tail_increasing() {
         if (this.round <= 10) return true;
         else {
-            if (this.round % 3 == 1) return true;
+            if (this.round % 3 === 1) return true;
         }
 
         return false;
@@ -61,10 +61,10 @@ export class Snake extends AcGameObject {
         // console.log(this.next_cell.r, this.next_cell.c);
 
         // console.log(k);
-        if (!this.game_map.check_valid(this.next_cell)) {
-            this.status = "die";
-            return;
-        }
+        // if (!this.game_map.check_valid(this.next_cell)) {
+        //     this.status = "die";
+        //     return;
+        // }
         for (let i = k; i > 0; i--) this.cells[i] = JSON.parse(JSON.stringify(this.cells[i - 1]));
 
     }

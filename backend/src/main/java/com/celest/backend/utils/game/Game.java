@@ -5,6 +5,7 @@ import com.celest.backend.comsumer.WebSocketServer;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -14,8 +15,6 @@ public class Game extends Thread{
     private final Integer rows;
     //地图的宽
     private final Integer cols;
-
-
 
     //地图的障碍物的数量
     private final Integer innerWallsCount;
@@ -50,7 +49,6 @@ public class Game extends Thread{
                     sendResult();
                     break;
                 }
-
             }else {
                 //玩家未在指定时间输入操作,判负
                 this.status = "finished";
@@ -101,7 +99,34 @@ public class Game extends Thread{
     }
 
     private void judge() {
+        List<Cell> cellsA = this.playerA.getCells();
+        List<Cell> cellsB = this.playerB.getCells();
+        boolean validA = check_valid(cellsA, cellsB);
+        boolean validB = check_valid(cellsB,cellsA);
+        if(!validA || !validB){
+            this.status = "finished";
+            if(!validA && !validB){
+                this.loser =  "All";
+            }else if(!validA){
+                this.loser = "A";
+            }else {
+                this.loser = "B";
+            }
+        }
 
+    }
+
+    private boolean check_valid(List<Cell> A, List<Cell> B) {
+        int n = A.size();
+        Cell cell = A.get(n - 1);
+        if (this.map[cell.getX()][cell.getY()] == 1) {
+            return false;
+        }
+        for(int i=0 ; i<n-1;i++){
+            if(A.get(i).getX() == cell.getX()&&A.get(i).getY() == cell.getY()
+                    || B.get(i).getX() == cell.getX()&&B.get(i).getY() == cell.getY()) return false;
+        }
+        return true;
     }
 
     private boolean nextStep() {
