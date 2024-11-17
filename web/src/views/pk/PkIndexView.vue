@@ -1,17 +1,20 @@
 <template >
   <play-ground-vue v-if="$store.state.pk.status === 'playing'"/>
   <MatchGround v-if="$store.state.pk.status === 'matching'"/>
+  <ResultBoard v-if="$store.state.pk.loser !== 'none' "/>
 </template>
 <script>
 import PlayGroundVue from '@/components/PlayGroundVue.vue'
 import {onMounted, onUnmounted} from "vue";
 import {useStore} from "vuex";
 import MatchGround from '../../components/MatchGround.vue'
+import ResultBoard from "@/components/ResultBoard.vue";
 export default {
     name: 'PkIndexView',
     components: {
         PlayGroundVue,
         MatchGround,
+        ResultBoard
     },
     setup(){
       let socket = null;

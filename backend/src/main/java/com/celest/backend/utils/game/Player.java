@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 @Data
@@ -37,6 +36,14 @@ public class Player {
         }
 
         return cells;
+    }
+
+    public String getStepsString(){
+        StringBuilder bu = new StringBuilder();
+        for (Integer step : steps) {
+            bu.append(step);
+        }
+        return bu.toString();
     }
 
 }

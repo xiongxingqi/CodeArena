@@ -2,9 +2,11 @@ package com.celest.backend.utils.game;
 
 import cn.hutool.json.JSONObject;
 import com.celest.backend.comsumer.WebSocketServer;
+import com.celest.backend.pojo.entity.Record;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
@@ -70,11 +72,38 @@ public class Game extends Thread{
         }
     }
 
+    public String getMapString(){
+        StringBuilder builder = new StringBuilder();
+        for (int[] row : this.map) {
+            for (int c : row) {
+                builder.append(c);
+            }
+        }
+
+        return builder.toString();
+    }
+
+    public void saveToDatabase(){
+        Record record = new Record(null, this.playerA.getId(),
+                this.playerA.getSx(),
+                this.playerA.getSy(),
+                this.playerB.getId(),
+                this.playerB.getSx(),
+                this.playerB.getSy(),
+                this.playerA.getStepsString(),
+                this.playerB.getStepsString(),
+                this.getMapString(),
+                this.loser,
+                new Date());
+        WebSocketServer.recordMapper.insert(record);
+
+    }
+
     private void sendResult() {
         JSONObject message = new JSONObject();
         message.set("event","result");
         message.set("loser",this.loser);
-        System.out.println("loser:" + this.loser);
+        saveToDatabase();
         sendMessageAll(message.toString());
 
     }

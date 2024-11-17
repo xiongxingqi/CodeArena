@@ -4,6 +4,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTUtil;
+import com.celest.backend.mapper.RecordMapper;
 import com.celest.backend.mapper.UserMapper;
 import com.celest.backend.pojo.entity.User;
 import com.celest.backend.utils.game.Game;
@@ -34,11 +35,17 @@ public class WebSocketServer {
 
     private static UserMapper userMapper;
 
+    public static RecordMapper recordMapper;
+
     private  Game game;
 
     @Autowired
     public void setUserMapper(UserMapper userMapper) {
         WebSocketServer.userMapper= userMapper;
+    }
+    @Autowired
+    public void setRecordMapper(RecordMapper recordMapper){
+        WebSocketServer.recordMapper = recordMapper;
     }
 
     @OnOpen

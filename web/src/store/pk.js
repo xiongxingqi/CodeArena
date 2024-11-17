@@ -1,7 +1,7 @@
 
 export default {
     state: {
-        status: "matching", // matching 匹配界面 playing 对战界面
+        status: "matching", // matching 匹配界面 playing 对战界面 result 结算界面
         socket: null,
         opponent_username: "",
         opponent_photo: "",
@@ -13,7 +13,7 @@ export default {
         b_sy: 0,
         game_map: null,
         game_object: null,
-        lower: "none" // none All A B
+        loser: "none" // none All A B
     },
     getters: {
     },
