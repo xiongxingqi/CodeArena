@@ -1,0 +1,6 @@
+server:
+  port: 3001
+
+logging:
+  pattern:
+    dateformat: 'yyyy-MM-dd HH:mm:ss'
