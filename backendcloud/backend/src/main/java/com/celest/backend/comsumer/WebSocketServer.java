@@ -8,25 +8,24 @@ import com.celest.backend.mapper.RecordMapper;
 import com.celest.backend.mapper.UserMapper;
 import com.celest.backend.pojo.entity.User;
 import com.celest.backend.utils.game.Game;
-import com.celest.backend.utils.game.Player;
+import com.celest.backend.utils.result.Result;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 @Component
 @ServerEndpoint("/websocket/{token}")  // 注意不要以'/'结尾
 public class WebSocketServer {
 
     public final static ConcurrentHashMap<Integer, WebSocketServer>  users = new ConcurrentHashMap<>();
-
-    public final static CopyOnWriteArraySet<User> matchPool = new CopyOnWriteArraySet<>();
 
     private Session session;
 
@@ -37,8 +36,12 @@ public class WebSocketServer {
 
     public static RecordMapper recordMapper;
 
+    public static RestTemplate restTemplate;
+
     private  Game game;
 
+    private static final String addPlayerUrl = "http://127.0.0.1:3001/player/add";
+    private static final String removePlayerUrl = "http://127.0.0.1:3001/player/remove";
     @Autowired
     public void setUserMapper(UserMapper userMapper) {
         WebSocketServer.userMapper= userMapper;
@@ -46,6 +49,10 @@ public class WebSocketServer {
     @Autowired
     public void setRecordMapper(RecordMapper recordMapper){
         WebSocketServer.recordMapper = recordMapper;
+    }
+    @Autowired
+    public void setRestTemplate(RestTemplate restTemplate){
+        WebSocketServer.restTemplate = restTemplate;
     }
 
     @OnOpen
@@ -65,7 +72,6 @@ public class WebSocketServer {
         }
 
         System.out.println(user);
-
     }
 
     @OnClose
@@ -74,7 +80,6 @@ public class WebSocketServer {
         System.out.println("closed!");
         if (this.user != null) {
             users.remove(user.getId());
-            matchPool.remove(this.user);
         }
     }
 
@@ -91,67 +96,70 @@ public class WebSocketServer {
         // 从Client接收消息
         JSONObject info = JSONUtil.parseObj(message);
         String event = info.getStr("event");
-        if(event.equals("start_match")){
-            startMatch();
-        }else if(event.equals("stop_match")){
-            stopMatch();
-        }else if(event.equals("move")){
-            System.out.println("move");
-            move(info.getInt("direction"));
+        switch (event) {
+            case "start_match" -> startMatch();
+            case "stop_match" -> stopMatch();
+            case "move" -> {
+                System.out.println("move");
+                move(info.getInt("direction"));
+            }
         }
 
     }
 
     private void stopMatch() {
         System.out.println("stopMatch");
-        matchPool.remove(this.user);
+        MultiValueMap<String,String> data = new LinkedMultiValueMap<>();
+        data.add("userId",user.getId().toString());
+        Result<?> success = restTemplate.postForObject(removePlayerUrl, data, Result.class);
+
+
+    }
+
+    public static void  startGame(Integer playerA ,Integer playerB){
+
+        User playerOne = userMapper.selectById(playerA);
+        User playerTwo = userMapper.selectById(playerB);
+
+        Game game = new Game(13,14,20,playerOne.getId(),playerTwo.getId());
+
+        game.createMap();
+        WebSocketServer.users.get(playerOne.getId()).game = game;
+        WebSocketServer.users.get(playerTwo.getId()).game = game;
+
+        JSONObject respGame = new JSONObject();
+        respGame.set("a_id",game.getPlayerA().getId());
+        respGame.set("a_sx",game.getPlayerA().getSx());
+        respGame.set("a_sy",game.getPlayerA().getSy());
+        respGame.set("b_id",game.getPlayerB().getId());
+        respGame.set("b_sx",game.getPlayerB().getSx());
+        respGame.set("b_sy",game.getPlayerB().getSy());
+        respGame.set("game_map",game.getMap());
+
+        JSONObject resA = new JSONObject();
+        resA.set("event","match_success");
+        resA.set("opponent_username",playerOne.getUsername());
+        resA.set("opponent_photo",playerOne.getPhoto());
+        resA.set("game", respGame);
+        users.get(playerTwo.getId()).sendMessage(resA.toString());
+
+        JSONObject resB = new JSONObject();
+        resB.set("event","match_success");
+        resB.set("opponent_username",playerTwo.getUsername());
+        resB.set("opponent_photo",playerTwo.getPhoto());
+        resB.set("game", respGame);
+        users.get(playerOne.getId()).sendMessage(resB.toString());
+        System.out.println("match_success");
+        game.start();
     }
 
     private void startMatch() {
         System.out.println("start match");
-        matchPool.add(this.user);
 
-        while(matchPool.size()>=2){
-            Iterator<User> iterator = matchPool.iterator();
-            User playerOne = iterator.next(),playerTwo = iterator.next();
-
-            matchPool.remove(playerTwo);
-            matchPool.remove(playerOne);
-
-            Game game = new Game(13,14,20,playerOne.getId(),playerTwo.getId());
-
-            game.createMap();
-            WebSocketServer.users.get(playerOne.getId()).game = game;
-            WebSocketServer.users.get(playerTwo.getId()).game = game;
-
-            JSONObject respGame = new JSONObject();
-            respGame.set("a_id",game.getPlayerA().getId());
-            respGame.set("a_sx",game.getPlayerA().getSx());
-            respGame.set("a_sy",game.getPlayerA().getSy());
-            respGame.set("b_id",game.getPlayerB().getId());
-            respGame.set("b_sx",game.getPlayerB().getSx());
-            respGame.set("b_sy",game.getPlayerB().getSy());
-            respGame.set("game_map",game.getMap());
-
-            JSONObject resA = new JSONObject();
-            resA.set("event","match_success");
-            resA.set("opponent_username",playerOne.getUsername());
-            resA.set("opponent_photo",playerOne.getPhoto());
-            resA.set("game", respGame);
-            users.get(playerTwo.getId()).sendMessage(resA.toString());
-
-            JSONObject resB = new JSONObject();
-            resB.set("event","match_success");
-            resB.set("opponent_username",playerTwo.getUsername());
-            resB.set("opponent_photo",playerTwo.getPhoto());
-            resB.set("game", respGame);
-            users.get(playerOne.getId()).sendMessage(resB.toString());
-            System.out.println("match_success");
-            game.start();
-
-        }
-
-
+        MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
+        data.add("userId",user.getId().toString());
+        data.add("rating",user.getRating().toString());
+        Result<?> success = restTemplate.postForObject(addPlayerUrl, data, Result.class);
     }
 
     @OnError

@@ -18,7 +18,7 @@ public class MatchingController {
     @PostMapping("/player/add")
     //使用@RequestParam可将映射参数强制转为MultiValueMap
     public Result<?> addPlayer(@RequestParam MultiValueMap<String,String> data){
-        int userId = Integer.parseInt(Objects.requireNonNull(data.getFirst("user_id")));
+        int userId = Integer.parseInt(Objects.requireNonNull(data.getFirst("userId")));
         int rating = Integer.parseInt(Objects.requireNonNull(data.getFirst("rating")));
         this.matchingService.addPlayer(userId,rating);
         return Result.success();

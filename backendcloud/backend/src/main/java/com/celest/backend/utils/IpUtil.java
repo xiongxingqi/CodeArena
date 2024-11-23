@@ -1,4 +1,4 @@
-package com.celest.matchingsystem.utils;
+package com.celest.backend.utils;
 
 import jakarta.servlet.http.HttpServletRequest;
 

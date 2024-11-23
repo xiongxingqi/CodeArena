@@ -42,7 +42,7 @@ public class BotServiceImpl implements BotService {
         UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userDetail.getUser();
         Date now = new Date();
-        Bot bot = new Bot(null, user.getId(), title, description, content, 1500, now, now);
+        Bot bot = new Bot(null, user.getId(), title, description, content, now, now);
         //持久化bot
         botMapper.insert(bot);
 
