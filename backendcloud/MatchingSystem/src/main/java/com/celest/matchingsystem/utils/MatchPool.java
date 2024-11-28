@@ -1,6 +1,8 @@
 package com.celest.matchingsystem.utils;
 
 import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -15,6 +17,7 @@ public class MatchPool extends Thread{
     private List<Player> users = new ArrayList<>();
     private final ReentrantLock lock = new ReentrantLock();
     private RestTemplate restTemplate ;
+    private final static Logger log = LoggerFactory.getLogger(MatchPool.class);
 
     private static final String startGameUrl = "http://127.0.0.1:3000/match/startGame";
 
@@ -72,7 +75,7 @@ public class MatchPool extends Thread{
     private boolean checkMatch(Player userA,Player userB){
         int diffScore = Math.abs(userA.getRating() - userB.getRating());
         int waitTime = Math.min(userA.getWaitTime(),userB.getWaitTime());
-        System.out.println("waitTme: " + waitTime);
+        log.info("waitTime: {}" , waitTime);
         return diffScore <= waitTime*10;
     }
     private void tryMatch(){
@@ -107,7 +110,7 @@ public class MatchPool extends Thread{
                     lock.unlock();
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error("匹配池InterruptedException:{}",e.getMessage());
                 break;
             }
         }

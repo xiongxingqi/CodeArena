@@ -124,8 +124,10 @@ public class WebSocketServer {
         Game game = new Game(13,14,20,playerOne.getId(),playerTwo.getId());
 
         game.createMap();
-        WebSocketServer.users.get(playerOne.getId()).game = game;
-        WebSocketServer.users.get(playerTwo.getId()).game = game;
+        if (users.get(playerOne.getId()) != null)
+            WebSocketServer.users.get(playerOne.getId()).game = game;
+        if(users.get(playerTwo.getId()) != null)
+            WebSocketServer.users.get(playerTwo.getId()).game = game;
 
         JSONObject respGame = new JSONObject();
         respGame.set("a_id",game.getPlayerA().getId());
@@ -141,14 +143,16 @@ public class WebSocketServer {
         resA.set("opponent_username",playerOne.getUsername());
         resA.set("opponent_photo",playerOne.getPhoto());
         resA.set("game", respGame);
-        users.get(playerTwo.getId()).sendMessage(resA.toString());
+        if (users.get(playerTwo.getId()) != null)
+            users.get(playerTwo.getId()).sendMessage(resA.toString());
 
         JSONObject resB = new JSONObject();
         resB.set("event","match_success");
         resB.set("opponent_username",playerTwo.getUsername());
         resB.set("opponent_photo",playerTwo.getPhoto());
         resB.set("game", respGame);
-        users.get(playerOne.getId()).sendMessage(resB.toString());
+        if (users.get(playerOne.getId()) != null)
+            users.get(playerOne.getId()).sendMessage(resB.toString());
         System.out.println("match_success");
         game.start();
     }

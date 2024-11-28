@@ -109,8 +109,10 @@ public class Game extends Thread {
     }
 
     private void sendMessageAll(String message) {
-        WebSocketServer.users.get(this.playerA.getId()).sendMessage(message);
-        WebSocketServer.users.get(this.playerB.getId()).sendMessage(message);
+        if(WebSocketServer.users.get(this.playerA.getId()) != null)
+            WebSocketServer.users.get(this.playerA.getId()).sendMessage(message);
+        if (WebSocketServer.users.get(playerB.getId()) != null)
+            WebSocketServer.users.get(this.playerB.getId()).sendMessage(message);
     }
 
     private void sendMove() {
