@@ -1,7 +1,7 @@
 <template >
   <div class="match_ground">
     <div class="row">
-      <div class="col-6">
+      <div class="col-4">
         <div class="photo">
           <img :src="$store.state.user.photo" alt="">
         </div>
@@ -9,7 +9,17 @@
           {{$store.state.user.username}}
         </div>
       </div>
-      <div class="col-6">
+      <div class="col-4">
+        <div class="user-select-bot">
+          <select v-model="select_bot" class="form-select" aria-label="Default select example">
+            <option selected value="-1">亲自出马</option>
+            <option v-for="bot in bots" :value="bot.id" :key="bot.id" >
+              {{bot.title}}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="col-4">
         <div class="photo">
           <img :src="$store.state.pk.opponent_photo" alt="">
         </div>
@@ -29,17 +39,23 @@
 
 import {ref} from "vue";
 import {useStore} from "vuex";
+import axios from "axios";
 
 export default {
   setup(){
     const match_btn_info = ref('开始匹配');
     const store = useStore();
 
+    const bots = ref([]);
+    const select_bot = ref("-1");
+
     const click_match_btn = () =>{
       if (match_btn_info.value === '开始匹配') {
         match_btn_info.value = '取消';
+        
         store.state.pk.socket.send(JSON.stringify({
-          event: "start_match"
+          event: "start_match",
+          botId: select_bot.value
         }))
       } else if(match_btn_info.value === '取消'){
         match_btn_info.value = '开始匹配';
@@ -48,9 +64,30 @@ export default {
         }));
       }
     }
+    const refresh=() =>{
+      axios.get('/user/bot/getList',{
+        headers: {
+          Authorization: 'Bearer ' + store.state.user.token
+        }
+      }).then((resp)=>{
+        const result = resp.data;
+        if(result.code === 1){
+          bots.value=result.data;
+        }else{
+          alert(result.message);
+        }
+      }).catch((error)=>{
+        alert("网络环境波动,请稍后再试"+error.status);
+      });
+    }
+
+    refresh();
+
     return {
       match_btn_info,
       click_match_btn,
+      bots,
+      select_bot,
     }
 
   }
@@ -82,5 +119,12 @@ export default {
 div.col-12 {
   padding-top: 10vh;
   text-align: center;
+}
+div.user-select-bot{
+  padding-top: 60%;
+}
+select.form-select{
+  width: 60%;
+  margin: 0 auto;
 }
 </style>

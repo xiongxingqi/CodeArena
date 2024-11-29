@@ -13,6 +13,8 @@ public class Player {
     private Integer id;
     private Integer sx;
     private Integer sy;
+    private Integer botId;
+    private String botCode;
     private List<Integer> steps;
 
     private boolean check_tail_increasing(int step){

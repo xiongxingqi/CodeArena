@@ -2,8 +2,12 @@ package com.celest.backend.utils.game;
 
 import cn.hutool.json.JSONObject;
 import com.celest.backend.comsumer.WebSocketServer;
+import com.celest.backend.pojo.entity.Bot;
 import com.celest.backend.pojo.entity.Record;
+import com.celest.backend.utils.result.Result;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.LinkedMultiValueMap;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,7 +15,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
 
-
+@Slf4j
 public class Game extends Thread {
     //地图的高
     private final Integer rows;
@@ -38,6 +42,7 @@ public class Game extends Thread {
     private String status = "playing"; // playing -> finished
     private String loser = ""; // all A B
 
+    private final static String botNextStepURL = "http://127.0.0.1:3002/botRunning/addBot";
 
     @Override
     public void run() {
@@ -161,11 +166,17 @@ public class Game extends Thread {
     }
 
     private boolean nextStep() {
+
         try {
             Thread.sleep(200);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        log.info("playerA botId: {} playerB botId: {}",this.playerA.getBotId(),this.playerB.getBotId());
+        if(!playerA.getBotId().equals(-1))
+            getBotNextStep(this.playerA);
+        if(!playerB.getBotId().equals(-1))
+            getBotNextStep(this.playerB);
         for (int i = 0; i < 50; i++) {
             try {
                 Thread.sleep(100);
@@ -187,6 +198,36 @@ public class Game extends Thread {
         return false;
     }
 
+    private void getBotNextStep(Player player) {
+        LinkedMultiValueMap<String,String> data = new LinkedMultiValueMap<>();
+        data.add("userId",player.getId().toString());
+        data.add("botCode",player.getBotCode());
+        data.add("input",getInput(player));
+        log.info("botNext userId: {}",player.getId().toString());
+        Result<?> res = WebSocketServer.restTemplate.postForObject(botNextStepURL, data, Result.class);
+    }
+
+    private String getInput(Player player) {
+        StringBuilder inputBuild = new StringBuilder();
+        inputBuild.append(getMapString()).append("#");
+        Player me,you;
+        if(player.getId().equals(playerA.getId())){
+            me = playerA;
+            you = playerB;
+        }else{
+            me = playerB;
+            you = playerA;
+        }
+        inputBuild.append(me.getSx()).append("#")
+                .append(me.getSy()).append("#")
+                .append("(").append(me.getStepsString()).append(")#")
+                .append(you.getSx()).append("#")
+                .append(you.getSy()).append("#")
+                .append("(").append(you.getStepsString()).append(")");
+
+        return inputBuild.toString();
+    }
+
     public void setNextstepA(Integer nextstep) {
         lock.lock();
         try {
@@ -205,14 +246,36 @@ public class Game extends Thread {
         }
     }
 
-    public Game(Integer rows, Integer cols, Integer innerWallsCount, Integer id_a, Integer id_b) {
+    public Game(Integer rows, Integer cols, Integer innerWallsCount, Integer id_a, Bot botA, Integer id_b,Bot botB) {
         this.rows = rows;
         this.cols = cols;
         this.innerWallsCount = innerWallsCount;
         this.map = new int[this.rows][this.cols];
-        this.playerA = new Player(id_a, this.rows - 2, 1, new ArrayList<>());
-        this.playerB = new Player(id_b, 1, this.cols - 2, new ArrayList<>());
+        Integer botAId = -1, botBId =-1;
+        String botACode = "" , botBCode = "";
+        if(botA!=null){
+            botAId = botA.getId();
+            botACode = botA.getContent();
+        }
+        if(botB != null){
+            botBId = botB.getId();
+            botBCode = botB.getContent();
+        }
+        this.playerA = new Player(
+                id_a,
+                this.rows - 2,
+                1,
+                botAId,
+                botACode ,
+                new ArrayList<>());
 
+        this.playerB = new Player(
+                id_b,
+                1,
+                this.cols - 2,
+                botBId,
+                botBCode,
+                new ArrayList<>());
     }
 
 

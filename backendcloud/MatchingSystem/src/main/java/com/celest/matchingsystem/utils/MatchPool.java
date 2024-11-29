@@ -37,10 +37,10 @@ public class MatchPool extends Thread{
             lock.unlock();
         }
     }
-    public void  addUser(Integer userId,Integer rating){
+    public void  addUser(Integer userId,Integer rating,Integer botId){
         lock.lock();
         try{
-            Player player = new Player(userId, rating, 0);
+            Player player = new Player(userId, rating,botId, 0);
             this.users.add(player);
         }finally{
             lock.unlock();
@@ -60,10 +60,12 @@ public class MatchPool extends Thread{
         }
     }
 
-    private void sendMatchResult(Integer userA,Integer userB){
+    private void sendMatchResult(Player playerA,Player playerB){
         MultiValueMap<String,String> data = new LinkedMultiValueMap<>();
-        data.add("userA",userA.toString());
-        data.add("userB",userB.toString());
+        data.add("userA",playerA.getUserId().toString());
+        data.add("aBotId",playerA.getBotId().toString());
+        data.add("userB",playerB.getUserId().toString());
+        data.add("bBotId",playerB.getBotId().toString());
         Result<?> success = restTemplate.postForObject(startGameUrl, data, Result.class);
         if(success!=null){
             System.out.println("code:"+ success.getCode());
@@ -82,11 +84,11 @@ public class MatchPool extends Thread{
         boolean[] matched = new boolean[users.size()];
 
         for(int i=0;i<users.size();i++){
-            if(matched[i])continue;
+            if(matched[i]) continue;
             for(int j=i+1;j<users.size();j++){
                 if(matched[j]||!checkMatch(users.get(i),users.get(j))) continue;
                 matched[i]=matched[j]=true;
-                sendMatchResult(users.get(i).getUserId(),users.get(j).getUserId());
+                sendMatchResult(users.get(i),users.get(j));
                 break;
             }
         }

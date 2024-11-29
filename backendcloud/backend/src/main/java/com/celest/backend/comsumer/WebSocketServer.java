@@ -4,14 +4,17 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTUtil;
+import com.celest.backend.mapper.BotMapper;
 import com.celest.backend.mapper.RecordMapper;
 import com.celest.backend.mapper.UserMapper;
+import com.celest.backend.pojo.entity.Bot;
 import com.celest.backend.pojo.entity.User;
 import com.celest.backend.utils.game.Game;
 import com.celest.backend.utils.result.Result;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -22,7 +25,8 @@ import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-@ServerEndpoint("/websocket/{token}")  // 注意不要以'/'结尾
+@ServerEndpoint("/websocket/{token}")
+@Slf4j// 注意不要以'/'结尾
 public class WebSocketServer {
 
     public final static ConcurrentHashMap<Integer, WebSocketServer>  users = new ConcurrentHashMap<>();
@@ -37,6 +41,8 @@ public class WebSocketServer {
     public static RecordMapper recordMapper;
 
     public static RestTemplate restTemplate;
+
+    public static BotMapper botMapper;
 
     private  Game game;
 
@@ -53,6 +59,10 @@ public class WebSocketServer {
     @Autowired
     public void setRestTemplate(RestTemplate restTemplate){
         WebSocketServer.restTemplate = restTemplate;
+    }
+    @Autowired
+    public void setBotMapper(BotMapper botMapper){
+        WebSocketServer.botMapper = botMapper;
     }
 
     @OnOpen
@@ -85,9 +95,11 @@ public class WebSocketServer {
 
     private void move(Integer direction){
         if(game.getPlayerA().getId().equals(user.getId())){
-            game.setNextstepA(direction);
+            if(game.getPlayerA().getBotId().equals(-1)) // 亲自出马
+                game.setNextstepA(direction);
         }else if(game.getPlayerB().getId().equals(user.getId())){
-            game.setNextstepB(direction);
+            if(game.getPlayerB().getBotId().equals(-1))
+                game.setNextstepB(direction);
         }
     }
 
@@ -97,7 +109,7 @@ public class WebSocketServer {
         JSONObject info = JSONUtil.parseObj(message);
         String event = info.getStr("event");
         switch (event) {
-            case "start_match" -> startMatch();
+            case "start_match" -> startMatch(info.getInt("botId"));
             case "stop_match" -> stopMatch();
             case "move" -> {
                 System.out.println("move");
@@ -116,12 +128,22 @@ public class WebSocketServer {
 
     }
 
-    public static void  startGame(Integer playerA ,Integer playerB){
+    public static void  startGame(Integer playerA ,Integer botA,Integer playerB,Integer botB){
 
         User playerOne = userMapper.selectById(playerA);
+        Bot botOne = botMapper.selectById(botA);
         User playerTwo = userMapper.selectById(playerB);
+        Bot botTwo = botMapper.selectById(botB);
 
-        Game game = new Game(13,14,20,playerOne.getId(),playerTwo.getId());
+
+        Game game = new Game(
+                13,
+                14,
+                20,
+                playerOne.getId(),
+                botOne,
+                playerTwo.getId(),
+                botTwo);
 
         game.createMap();
         if (users.get(playerOne.getId()) != null)
@@ -157,12 +179,12 @@ public class WebSocketServer {
         game.start();
     }
 
-    private void startMatch() {
-        System.out.println("start match");
-
+    private void startMatch(Integer botId) {
+        log.info("start Match botId: {}",botId);
         MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
         data.add("userId",user.getId().toString());
         data.add("rating",user.getRating().toString());
+        data.add("botId",botId.toString());
         Result<?> success = restTemplate.postForObject(addPlayerUrl, data, Result.class);
     }
 

@@ -23,8 +23,10 @@ public class MatchController {
     @PostMapping("/startGame")
     public Result<?> startGame(@RequestParam MultiValueMap<String,String> data){
         int userA = Integer.parseInt(Objects.requireNonNull(data.getFirst("userA")));
+        int aBotId = Integer.parseInt(Objects.requireNonNull(data.getFirst("aBotId")));
         int userB = Integer.parseInt(Objects.requireNonNull(data.getFirst("userB")));
-        matchService.startGame(userA,userB);
+        int bBotId = Integer.parseInt(Objects.requireNonNull(data.getFirst("bBotId")));
+        matchService.startGame(userA,aBotId,userB,bBotId);
         return Result.success();
     }
 }
