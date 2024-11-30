@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizationRequests -> authorizationRequests
                         //配置访问权限
                         .requestMatchers("/user/account/token", "/user/account/register","/doc.html",
-                                "/swagger-ui/**","/v3/**","/error","/websocket/**","/match/startGame")
+                                "/swagger-ui/**","/v3/**","/error","/websocket/**","/match/startGame","/botMove/setDirection")
 //                        .access(IpAddressAuthorizationManager.hasIpAddress("127.0.0.1")) 配置发访问IP的地址限制
                         .permitAll()
                         .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()

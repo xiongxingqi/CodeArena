@@ -44,7 +44,7 @@ public class WebSocketServer {
 
     public static BotMapper botMapper;
 
-    private  Game game;
+    public   Game game;
 
     private static final String addPlayerUrl = "http://127.0.0.1:3001/player/add";
     private static final String removePlayerUrl = "http://127.0.0.1:3001/player/remove";
@@ -93,7 +93,7 @@ public class WebSocketServer {
         }
     }
 
-    private void move(Integer direction){
+    public  void move(Integer direction){
         if(game.getPlayerA().getId().equals(user.getId())){
             if(game.getPlayerA().getBotId().equals(-1)) // 亲自出马
                 game.setNextstepA(direction);

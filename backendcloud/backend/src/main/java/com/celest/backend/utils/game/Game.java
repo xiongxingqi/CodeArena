@@ -203,7 +203,7 @@ public class Game extends Thread {
         data.add("userId",player.getId().toString());
         data.add("botCode",player.getBotCode());
         data.add("input",getInput(player));
-        log.info("botNext userId: {}",player.getId().toString());
+//        log.info("botNext userId: {}",player.getId().toString());
         Result<?> res = WebSocketServer.restTemplate.postForObject(botNextStepURL, data, Result.class);
     }
 

@@ -68,7 +68,7 @@
                   <td>{{bot.description}}</td>
                   <td>{{bot.createTime}}</td>
                   <td>
-                    <button type="button" class="btn btn-primary add-btn" data-bs-toggle="modal" :data-bs-target="'#update-bot'+bot.id" @click="update_bot(bot)">修改</button>
+                    <button type="button" class="btn btn-primary add-btn" data-bs-toggle="modal" :data-bs-target="'#update-bot'+bot.id">修改</button>
                     <button type="button" class="btn btn-danger" @click="remove_bot(bot)">删除</button>
 
                     <!-- Modal -->
@@ -77,7 +77,7 @@
                         <div class="modal-content" >
                           <div class="modal-header">
                             <h1 class="modal-title fs-5" :id="'staticBackdropLabel-update-'+ bot.id">修改BTO</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="refresh"></button>
                           </div>
                           <div class="modal-body">
                             <div class="input-group mb-3">
@@ -102,7 +102,7 @@
                           </div>
                           <div class="modal-footer">
                             <div class="error-message">{{messageError}}</div>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="refresh">取消</button>
                             <button type="button" @click="update_bot(bot)" class="btn btn-primary">保存</button>
                           </div>
                         </div>
@@ -232,7 +232,8 @@ export default {
       add_bot,
       remove_bot,
       update_bot,
-      messageError
+      messageError,
+      refresh
     }
   }
 
