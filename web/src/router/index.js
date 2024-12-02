@@ -7,6 +7,7 @@ import UserBotIndexView from '@/views/user/bot/UserBotIndexView.vue'
 import UserAccountLoginView from "@/views/user/account/UserAccountLoginView.vue";
 import UserAccountRegisterView from "@/views/user/account/UserAccountRegisterView.vue";
 import store from "@/store";
+import RecordContentView from "@/views/record/RecordContentView.vue";
 
 const routes = [
   {
@@ -24,6 +25,15 @@ const routes = [
     meta: {
       requiredAuth: true
     }
+  },
+  {
+    path: "/record/content/:record_id",
+    name: "recordContent",
+    component: RecordContentView,
+    meta: {
+      requiredAuth: true,
+    }
+
   },
   {
     path: '/rankList',

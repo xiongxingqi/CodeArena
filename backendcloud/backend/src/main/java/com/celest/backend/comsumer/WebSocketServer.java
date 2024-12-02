@@ -36,7 +36,7 @@ public class WebSocketServer {
 
     private User user;
 
-    private static UserMapper userMapper;
+    public  static UserMapper userMapper;
 
     public static RecordMapper recordMapper;
 

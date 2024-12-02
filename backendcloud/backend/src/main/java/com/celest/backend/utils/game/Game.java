@@ -1,9 +1,12 @@
 package com.celest.backend.utils.game;
 
 import cn.hutool.json.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.celest.backend.comsumer.WebSocketServer;
 import com.celest.backend.pojo.entity.Bot;
 import com.celest.backend.pojo.entity.Record;
+import com.celest.backend.pojo.entity.User;
 import com.celest.backend.utils.result.Result;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -89,6 +92,7 @@ public class Game extends Thread {
     }
 
     public void saveToDatabase() {
+        updateRating();
         Record record = new Record(null, this.playerA.getId(),
                 this.playerA.getSx(),
                 this.playerA.getSy(),
@@ -111,6 +115,26 @@ public class Game extends Thread {
         saveToDatabase();
         sendMessageAll(message.toString());
 
+    }
+
+    private void updateRating() {
+        User userA = WebSocketServer.userMapper.selectById(this.playerA.getId());
+        User userB = WebSocketServer.userMapper.selectById(this.playerB.getId());
+        Integer ratingA = userA.getRating();
+        Integer ratingB = userB.getRating();
+
+        if("A".equals(this.loser)){
+            ratingA -= 2;
+            ratingB += 5;
+        }else if("B".equals(this.loser)){
+            ratingB -= 2;
+            ratingA += 5;
+        }
+        userA.setRating(ratingA);
+        userB.setRating(ratingB);
+
+        WebSocketServer.userMapper.updateById(userA);
+        WebSocketServer.userMapper.updateById(userB);
     }
 
     private void sendMessageAll(String message) {

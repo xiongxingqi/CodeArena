@@ -63,35 +63,62 @@ export class GameMap extends AcGameObject {
         for (let snake of this.snakes) snake.next_step();
     }
     add_controller_event() {
-        this.ctx.canvas.focus();
-        this.ctx.canvas.addEventListener("keydown", e => {
-            let key = e.key;
-            const socket = this.store.state.pk.socket;
-            let direction = 0;
-            if (key === "w") {
-                direction = 0;
-            } else if (key === "d") {
-                direction = 1;
-            } else if (key === "s") {
-                direction = 2;
-            } else if (key === "a") {
-                direction = 3;
-            }
 
-            socket.send(JSON.stringify({
-                event: "move",
-                direction
-            }))
-            // } else if (key === "ArrowUp") {
-            //     snake2.set_direction(0);
-            // } else if (key === "ArrowRight") {
-            //     snake2.set_direction(1);
-            // } else if (key === "ArrowDown") {
-            //     snake2.set_direction(2);
-            // } else if (key === "ArrowLeft") {
-            //     snake2.set_direction(3);
-            // }
-        });
+        if(this.store.state.record.is_record === true){
+            let k =0;
+            const aSteps = this.store.state.record.a_steps;
+            const bSteps = this.store.state.record.b_steps;
+            const loser = this.store.state.record.record_loser;
+            const [sankeA,sankeB] = this.snakes;
+            const interval_id = setInterval(() =>{
+                if(k >= aSteps.length - 1){
+                    console.log(loser)
+                    if(loser === "All" || loser === "A"){
+                        sankeA.status = "die";
+                    }
+                    if(loser === "All" || loser === "B"){
+                        sankeB.status = "die";
+                    }
+
+                    clearInterval(interval_id);
+                }else{
+                    sankeA.set_direction(parseInt(aSteps[k]));
+                    sankeB.set_direction(parseInt(bSteps[k]));
+                }
+                k++;
+            },500);
+        }else {
+            this.ctx.canvas.focus();
+            this.ctx.canvas.addEventListener("keydown", e => {
+                let key = e.key;
+                const socket = this.store.state.pk.socket;
+                let direction = -1;
+                if (key === "w") {
+                    direction = 0;
+                } else if (key === "d") {
+                    direction = 1;
+                } else if (key === "s") {
+                    direction = 2;
+                } else if (key === "a") {
+                    direction = 3;
+                }
+                if(direction >= 0)
+                    socket.send(JSON.stringify({
+                    event: "move",
+                    direction
+                    }))
+                // } else if (key === "ArrowUp") {
+                //     snake2.set_direction(0);
+                // } else if (key === "ArrowRight") {
+                //     snake2.set_direction(1);
+                // } else if (key === "ArrowDown") {
+                //     snake2.set_direction(2);
+                // } else if (key === "ArrowLeft") {
+                //     snake2.set_direction(3);
+                // }
+            });
+        }
+
     }
 
     start() {
