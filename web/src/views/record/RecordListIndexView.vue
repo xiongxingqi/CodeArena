@@ -4,10 +4,10 @@
     <div class="card">
       <div class="card-header">
         <span class="recordFont">对战记录</span>
-        <button type="button" class="btn btn-primary recordButton" @click="pull_page">刷新记录</button>
+        <button type="button" class="btn btn-primary recordButton" @click="pull_page(currentPage)">刷新记录</button>
       </div>
       <div class="card-body">
-        <table class="table table-striped table-hover ">
+        <table class="table table-striped table-hover " style="text-align: center">
           <thead>
             <tr>
               <th>玩家A</th>
@@ -18,25 +18,44 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="record in records" :key="record.record.id">
-              <td>
-                <img :src="record.avatarA" alt="">
-                &nbsp;
-                <span>{{record.playerNameA}}</span>
-              </td>
-              <td >
-                <img :src="record.avatarB" alt="">
-                &nbsp;
-                <span>{{record.playerNameB}}</span>
-              </td>
-              <td>{{getVector(record.record.loser)}}</td>
-              <td>{{record.record.createTime}}</td>
-              <td>
-                <button type="button" class="btn btn-info" @click = "view_record(record)">查看录像</button>
-              </td>
-            </tr>
+          <tr v-for="record in records" :key="record.record.id">
+            <td>
+              <img :src="record.avatarA" alt="">
+              &nbsp;
+              <span>{{record.playerNameA}}</span>
+            </td>
+            <td >
+              <img :src="record.avatarB" alt="">
+              &nbsp;
+              <span>{{record.playerNameB}}</span>
+            </td>
+            <td>{{getVector(record.record.loser)}}</td>
+            <td>{{record.record.createTime}}</td>
+            <td>
+              <button type="button" class="btn btn-info" @click = "view_record(record)">查看录像</button>
+            </td>
+          </tr>
           </tbody>
         </table>
+        <nav aria-label= "record Page list ">
+          <ul class="pagination justify-content-end">
+            <li class="page-item" @click="next_page(-1)" >
+              <a class="page-link" href="#">
+              上一页
+              </a>
+            </li>
+              <li @click="pull_page(page.page)" :class="'page-item ' + page.active" v-for="page in pages " :key="page.page">
+                <a class="page-link" href="#">
+                  {{page.page}}
+                </a>
+              </li>
+            <li class="page-item" @click="next_page(-2)">
+              <a class="page-link" href="#">
+              下一页
+              </a>
+            </li>
+          </ul>
+        </nav>
       </div>
     </div>
   </div>
@@ -57,7 +76,10 @@ export default {
       const currentPage= ref(1);
 
       const store = useStore();
+
+      let recordTotal = 0;
       const pull_page = (page) =>{
+        currentPage.value = page;
         axios.get("/record/getRecordList",{
           params:{
             page
@@ -68,8 +90,13 @@ export default {
         }).then((resp) =>{
           console.log(resp.data);
           const result = resp.data;
-          if(result.code === 1)
-            records.value = result.data;
+          if(result.code === 1){
+
+            records.value = result.data.recordVOs;
+            console.log(records.value[0].record.id)
+            recordTotal = result.data.recordTotal;
+            update_page(currentPage.value);
+          }
           else alert(result.message);
         }).catch((error)=>{
           console.log(error.status)
@@ -102,6 +129,39 @@ export default {
       }
 
       const router = useRouter();
+      const pages = ref([]);
+
+      const next_page = (ops) => {
+        let new_page = 0;
+        if(ops === -1) new_page = currentPage.value -1;
+        else if(ops === -2) new_page = currentPage.value + 1;
+        let maxPages = Math.ceil(recordTotal / 10);
+
+        if(new_page > 0 && new_page <= maxPages) pull_page(new_page);
+      }
+
+      const update_page = (page)=>{
+        pages.value=[];
+        let maxPages = Math.ceil(recordTotal / 10);
+        console.log(maxPages)
+        for(let i = page - 2;i <= page + 2;i++ ){
+          if(i >= 1 && i<=maxPages){
+            if(i === page){
+              pages.value.push({
+                active: "active",
+                page: i,
+              })
+            }else {
+              pages.value.push({
+                active: "",
+                page: i,
+              });
+            }
+
+          }
+        }
+
+      }
 
      const view_record = (record) => {
         store.commit("update_is_record",true);
@@ -126,12 +186,16 @@ export default {
      }
 
       pull_page(currentPage.value);
+
       return {
         records,
         currentPage,
+        pages,
         pull_page,
         getVector,
         view_record,
+        update_page,
+        next_page,
       }
     }
 }

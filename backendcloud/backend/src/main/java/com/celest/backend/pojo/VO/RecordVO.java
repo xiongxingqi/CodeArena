@@ -12,5 +12,4 @@ public class RecordVO {
     private String avatarB;
     private String playerNameB;
     private Record record;
-
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,8 +20,8 @@ public class RecordController {
     private final RecordService recordService;
 
     @GetMapping("/getRecordList")
-    private Result<List<RecordVO>>  getRecordList(@RequestParam(name = "page") Integer page){
-        List<RecordVO> recordVOS = recordService.getRecordList(page);
+    private Result<Map<String,Object>>  getRecordList(@RequestParam(name = "page") Integer page){
+        Map<String,Object> recordVOS = recordService.getRecordList(page);
         return Result.success(recordVOS);
     }
 }
