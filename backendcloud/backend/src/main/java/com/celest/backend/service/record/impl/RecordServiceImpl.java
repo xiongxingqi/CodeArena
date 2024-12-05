@@ -40,7 +40,7 @@ public class RecordServiceImpl implements RecordService {
         ArrayList<RecordVO> recordVOS = new ArrayList<>();
         long recordTotal = recordIPage.getTotal();
         List<Record> records = recordIPage.getRecords();
-        records.stream().map(Record::getAId)
+
         for (Record record : records) {
             Integer playerA = record.getAId();
             Integer playerB = record.getBId();
