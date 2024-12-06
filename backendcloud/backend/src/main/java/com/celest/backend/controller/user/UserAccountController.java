@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/user/account")
+@RequestMapping("/api/user/account")
 @RequiredArgsConstructor
 @Tag(name="UserAuthentication",description =  "用户登录注册功能")
 @Slf4j

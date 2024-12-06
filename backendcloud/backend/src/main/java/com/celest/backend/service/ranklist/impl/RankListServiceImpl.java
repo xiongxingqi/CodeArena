@@ -25,7 +25,7 @@ public class RankListServiceImpl implements RankListService {
     public RankListVO getPageList(Integer page) {
         if(page <= 0) throw new BaseException("数据不合法");
         RankListVO res = new RankListVO();
-        IPage<User>  iPage = new Page<>(page,3);
+        IPage<User>  iPage = new Page<>(page,10);
         LambdaQueryWrapper<User> wrapper = Wrappers.lambdaQuery(User.class).orderByDesc(User::getRating);
         IPage<User> userIPage = userMapper.selectPage( iPage, wrapper );
         res.setPlayerTotal(userIPage.getTotal());

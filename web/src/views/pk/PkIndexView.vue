@@ -2,6 +2,8 @@
   <play-ground-vue v-if="$store.state.pk.status === 'playing'"/>
   <MatchGround v-if="$store.state.pk.status === 'matching'"/>
   <ResultBoard v-if="$store.state.pk.loser !== 'none' "/>
+  <div class="user-pos" v-if="$store.state.pk.status === 'playing' && $store.state.user.id === $store.state.pk.a_id">在左下角</div>
+  <div class="user-pos" v-if="$store.state.pk.status === 'playing' && $store.state.user.id === $store.state.pk.b_id">在右上角</div>
 </template>
 <script>
 import PlayGroundVue from '@/components/PlayGroundVue.vue'
@@ -79,5 +81,10 @@ export default {
 }
 </script>
 <style scoped>
-    
+div.user-pos {
+  text-align: center;
+  font-size: 40px;
+  color: white;
+  font-weight: 600;
+}
 </style>

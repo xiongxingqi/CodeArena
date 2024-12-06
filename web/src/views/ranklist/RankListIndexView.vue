@@ -69,12 +69,12 @@ export default {
         let new_page =currentPage.value;
         if(ops === -1 )  new_page = currentPage.value-1;
         else if(ops === -2) new_page = currentPage.value+1;
-        if(new_page>0&&new_page<=Math.ceil(usertotal/3))
+        if(new_page>0&&new_page<=Math.ceil(usertotal/10))
           pull_page(new_page);
       }
 
       const update_page = (page) =>{
-        let maxPage = Math.ceil(usertotal/3);
+        let maxPage = Math.ceil(usertotal/10);
         pages.value=[];
         for(let i =page-2;i<=page+2;i++){
           if(i>0&&i<=maxPage){

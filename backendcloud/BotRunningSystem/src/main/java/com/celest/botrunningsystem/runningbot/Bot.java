@@ -1,12 +1,15 @@
 package com.celest.botrunningsystem.runningbot;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
-public class Bot implements com.celest.botrunningsystem.runningbot.BotInterface{
+public class Bot implements java.util.function.Supplier<Integer>{
 
     private final static int[] dx = {-1,0,1,0},dy = {0,1,0,-1};
-    @Override
+
     public int move(String input) {
         String[] data = input.split("#");
         int[][] map = new int[13][14];
@@ -56,6 +59,19 @@ public class Bot implements com.celest.botrunningsystem.runningbot.BotInterface{
         }
 
         return cells;
+    }
+
+    @Override
+    public Integer get() {
+        File file = new File("input.txt");
+        int res =0;
+        try {
+            Scanner in = new Scanner(file);
+            res = move(in.nextLine());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return res;
     }
 
     private record Cell(int x, int y) {
