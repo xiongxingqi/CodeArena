@@ -106,7 +106,7 @@ public class WebSocketServer {
     @OnMessage
     public void onMessage(String message, Session session) {
         // 从Client接收消息
-        JSONObject info = JSONUtil.parseObj(message);
+        JSONObject info = JSONUtil. parseObj(message);
         String event = info.getStr("event");
         switch (event) {
             case "start_match" -> startMatch(info.getInt("botId"));

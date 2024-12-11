@@ -13,9 +13,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -57,8 +59,13 @@ public class JWTAuthenticationTokenFilter extends OncePerRequestFilter {
         JSONObject claimsJson = jwt.getPayload().getClaimsJson();
         //todo 令牌有效期校验
         userId = claimsJson.get("uid",String.class);
-
+        Long expireTime = claimsJson.get("expire_time", Long.class);
+        if(expireTime == null || System.currentTimeMillis() > expireTime )
+            throw new BadCredentialsException("token失效");
         User loginUser = userMapper.selectById(Integer.parseInt(userId));
+
+        if(loginUser == null) throw new UsernameNotFoundException("用户不存在");
+
         UserDetailsImpl userDetails = new UserDetailsImpl(loginUser);
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, null);
         SecurityContext emptyContext = SecurityContextHolder.createEmptyContext();

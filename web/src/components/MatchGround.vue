@@ -35,20 +35,23 @@
     </div>
   </div>
 </template>
-<script>
+<script >
 
-import {ref} from "vue";
+import {onUnmounted, ref} from "vue";
 import {useStore} from "vuex";
 import axios from "axios";
 
 export default {
-  setup(){
+  setup(props,{expose}){
     const match_btn_info = ref('开始匹配');
     const store = useStore();
 
     const bots = ref([]);
     const select_bot = ref("-1");
 
+    expose({
+      match_btn_info
+    });
     const click_match_btn = () =>{
       if (match_btn_info.value === '开始匹配') {
         match_btn_info.value = '取消';
@@ -80,6 +83,17 @@ export default {
         alert("网络环境波动,请稍后再试"+error.status);
       });
     }
+
+
+    onUnmounted(() =>{
+
+      console.log("UnMounted MatchGround!");
+      if(match_btn_info.value === "取消" ){
+        store.state.pk.socket.send(JSON.stringify({
+          event: "stop_match",
+        }))
+      }
+    });
 
     refresh();
 

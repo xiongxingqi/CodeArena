@@ -17,49 +17,67 @@ export default {
     const password=ref('');
     const error_message=ref('');
     const token = localStorage.getItem('token');
+
+
+    console.log(token);
+
     if(token){
       store.commit('updateToken',token);
       store.dispatch('getInfo',{
-        success(){
+        success(res){
+          store.commit("updateUser",{
+            ...(res.data),
+            is_login: true
+          });
           router.push({name: 'home'});
-          store.commit('updateAccessToInformation',false);
         },
         error(resp){
-          if(resp.status!==401) {
-            alert("服务器内部错误");
+          if (resp.status === 401) {
+            alert("身份失效请重新登录!")
+          }else {
+            alert("服务器内部错误,响应码:" + resp.status);
           }
-          store.commit("updateAccessToInformation",false);
+          router.push({name: 'user-account-login'})
         }
       });
     }else {
       store.commit('updateAccessToInformation',false);
     }
+
+
+
     const login =() =>{
       error_message.value='';
       store.dispatch('login',{
         username: username.value,
         password: password.value,
-        success(resp){
-          localStorage.setItem("token", resp.data.data.token);
-          store.dispatch("getInfo",{
-            success(){
-              router.push({name: 'home'});
-            },
-            error(resp){
-              if (resp.status=== 401) {
+        success(){
+            store.dispatch("getInfo",{
+              success(res){
+                store.commit("updateUser",{
+                  ...(res.data),
+                  is_login: true
+                });
+                router.push({name: 'home'});
+              },
+              error(resp){
+                if (resp.status === 401) {
+                  alert("身份失效请重新登录!")
+                }else {
+                  alert("服务器内部错误,响应码:" + resp.status);
+                }
                 router.push({name: 'user-account-login'})
-              }else {
-                alert("服务器内部错误")
               }
-            }
-          })
-          router.push({name: 'home'});
+            })
         },
-        error(resp){
-          error_message.value=resp.errorMessage;
+        error(res){
+          error_message.value=res.message;
         }
       })
     }
+
+
+
     return{
       error_message,
       username,

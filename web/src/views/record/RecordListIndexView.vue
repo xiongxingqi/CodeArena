@@ -109,24 +109,12 @@ export default {
         }else if(loser === "B"){
           return "A"
         }else if(loser === "All"){
-          return "Drew";
+          return "Draw";
         }
         return "Non";
       }
 
-      const getGameMapTo2D = (map) =>{
-        let g = [];
-        for(let i = 0, k=0;i<13;i++){
-          let line = [];
-          for(let j =0;j<14;j++,k++){
-            // line.push(parseInt(map[j]));
-            if(map[k] === '0') line.push(0);
-            else line.push(1);
-          }
-          g.push(line);
-        }
-        return g;
-      }
+
 
       const router = useRouter();
       const pages = ref([]);
@@ -163,21 +151,36 @@ export default {
 
       }
 
-     const view_record = (record) => {
-        store.commit("update_is_record",true);
-        store.commit("update_steps",record.record);
-        store.commit("updateGameMap",{
-          game_map: getGameMapTo2D(record.record.map),
-          a_id: record.record.aId,
-          a_sx: record.record.aSx,
-          a_sy: record.record.aSy,
-          b_id: record.record.bId,
-          b_sx: record.record.bSx,
-          b_sy: record.record.bSy,
-        });
-        store.commit("update_record_loser",record.record.loser);
+      const getGameMapTo2D = (map) =>{
+        let g = [];
+        for(let i = 0, k=0;i<13;i++){
+          let line = [];
+          for(let j =0;j<14;j++,k++){
+            // line.push(parseInt(map[j]));
+            if(map[k] === '0') line.push(0);
+            else line.push(1);
+          }
+          g.push(line);
+        }
+        return g;
+      }
 
-        router.push({
+     const view_record = (record) => {
+
+       store.commit("update_is_record",true);
+       store.commit("update_steps",record.record);
+       store.commit("updateGameMap",{
+         game_map: getGameMapTo2D(record.record.map),
+         a_id: record.record.aId,
+         a_sx: record.record.aSx,
+         a_sy: record.record.aSy,
+         b_id: record.record.bId,
+         b_sx: record.record.bSx,
+         b_sy: record.record.bSy,
+       });
+       store.commit("update_record_loser",record.record.loser);
+
+       router.push({
           name: "recordContent",
           params:{
             record_id: record.record.id,

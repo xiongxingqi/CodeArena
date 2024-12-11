@@ -15,28 +15,16 @@ import java.io.IOException;
 @Component
 @Slf4j
 public class NoAuthorizationEntryPoint implements AuthenticationEntryPoint {
-    /**
-     * 未授权的异常处理
-     * <p>
-     * <code>ExceptionTranslationFilter</code> will populate the <code>HttpSession</code>
-     * attribute named
-     * <code>AbstractAuthenticationProcessingFilter.SPRING_SECURITY_SAVED_REQUEST_KEY</code>
-     * with the requested target URL before calling this method.
-     * <p>
-     * Implementations should modify the headers on the <code>ServletResponse</code> as
-     * necessary to commence the authentication process.
-     *
-     * @param request       that resulted in an <code>AuthenticationException</code>
-     * @param response      so that the user agent can begin authentication
-     * @param authException that caused the invocation
-     */
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        if(authException instanceof UsernameNotFoundException || authException instanceof BadCredentialsException) {
-            log.info("用户名不存在或密码错误");
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
-        }else if(authException instanceof InsufficientAuthenticationException){
+        if(authException instanceof UsernameNotFoundException
+                || authException instanceof BadCredentialsException
+                ||authException instanceof InsufficientAuthenticationException) {
+            log.info("凭证失效");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        }else {
+            log.error(authException.getMessage());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -21,8 +21,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         QueryWrapper<User> userQuery = Wrappers.query(User.class).eq("username", username);
+
         User user = userMapper.selectOne(userQuery);
-        long end = System.currentTimeMillis();
-        return user!=null ? new UserDetailsImpl(user):null;
+        if(user == null) throw new UsernameNotFoundException(username);
+
+        return new UserDetailsImpl(user);
     }
 }

@@ -87,6 +87,7 @@ export class GameMap extends AcGameObject {
                 }
                 k++;
             },500);
+
         }else {
             this.ctx.canvas.focus();
             this.ctx.canvas.addEventListener("keydown", e => {
@@ -102,6 +103,7 @@ export class GameMap extends AcGameObject {
                 } else if (key === "a") {
                     direction = 3;
                 }
+                console.log(key);
                 if(direction >= 0)
                     socket.send(JSON.stringify({
                     event: "move",

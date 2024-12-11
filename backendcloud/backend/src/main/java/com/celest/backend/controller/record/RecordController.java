@@ -1,5 +1,6 @@
 package com.celest.backend.controller.record;
 
+import com.celest.backend.pojo.entity.Record;
 import com.celest.backend.service.record.RecordService;
 import com.celest.backend.utils.result.Result;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class RecordController {
     private final RecordService recordService;
 
     @GetMapping("/getRecordList")
-    private Result<Map<String,Object>>  getRecordList(@RequestParam(name = "page") Integer page){
+    public  Result<Map<String,Object>>  getRecordList(@RequestParam(name = "page") Integer page){
         Map<String,Object> recordVOS = recordService.getRecordList(page);
         return Result.success(recordVOS);
     }

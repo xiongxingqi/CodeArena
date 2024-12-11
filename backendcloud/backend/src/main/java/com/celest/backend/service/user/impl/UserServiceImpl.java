@@ -2,6 +2,7 @@ package com.celest.backend.service.user.impl;
 
 import cn.hutool.jwt.JWTUtil;
 import com.celest.backend.config.properties.JwtProperties;
+import com.celest.backend.exception.BaseException;
 import com.celest.backend.mapper.UserMapper;
 import com.celest.backend.pojo.entity.User;
 import com.celest.backend.service.impl.utils.UserDetailsImpl;
@@ -10,9 +11,11 @@ import com.celest.backend.utils.jwt.StringUtil;
 import com.celest.backend.utils.result.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,10 +35,20 @@ public class UserServiceImpl implements UserService {
     private final JwtProperties jwtProperties;
     @Override
     public String getToken(String username, String password) {
+
+        if(username == null || username.isEmpty() || password == null || password.isEmpty())
+            throw new BaseException("用户名或密码不能为空!");
         //构建AuthenticationToken
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+        Authentication authenticate;
+        try{
+                authenticate = authenticationManager.authenticate(authenticationToken);
+        }catch (BadCredentialsException e) {
+            throw new BaseException("用户或密码错误");
+        }catch (UsernameNotFoundException e) {
+            throw new BaseException("用户不存在,请注册");
+        }
 
-        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
         UserDetailsImpl loginUser = (UserDetailsImpl) authenticate.getPrincipal();
         User user = loginUser.getUser();
         Map<String,Object> pay=new HashMap<>();

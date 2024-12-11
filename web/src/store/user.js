@@ -30,14 +30,17 @@ export default {
                 username: data.username,
                 password: data.password,
             }).then( resp =>{
-                    context.commit("updateToken",resp.data.data.token);
-                    data.success(resp);
-            }).catch(error =>{
-                if(error.status=== 403) {
-                    data.error({errorMessage: '用户名或密码错误'});
-                }else{
-                    alert('服务器内部错误');
+                const res = resp.data;
+                if(res.code === 1){
+                    console.log(res.data.token)
+                    localStorage.setItem("token", res.data.token);
+                    context.commit("updateToken",res.data.token);
+                    data.success();
+                }else {
+                    data.error(res);
                 }
+            }).catch(error =>{
+                alert("服务出错,响应码为:" + error.status);
             });
         },
         getInfo(context,data){
@@ -46,12 +49,13 @@ export default {
                     Authorization: 'Bearer ' + context.state.token
                 }
             }).then(resp => {
-                context.commit("updateUser",{
-                    ...(resp.data.data),
-                    is_login: true
-                });
                 // console.log(JSON.stringify(resp))
-                data.success(resp);
+                let res = resp.data;
+                if(res.code === 1){
+                    data.success(resp.data);
+                }else {
+                    alert(res.message);
+                }
             }).catch(error => {
                 data.error(error);
             })
