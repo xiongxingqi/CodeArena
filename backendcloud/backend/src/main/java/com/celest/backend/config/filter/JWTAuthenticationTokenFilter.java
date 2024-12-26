@@ -60,11 +60,16 @@ public class JWTAuthenticationTokenFilter extends OncePerRequestFilter {
         //todo 令牌有效期校验
         userId = claimsJson.get("uid",String.class);
         Long expireTime = claimsJson.get("expire_time", Long.class);
-        if(expireTime == null || System.currentTimeMillis() > expireTime )
-            throw new BadCredentialsException("token失效");
+        if(expireTime == null || System.currentTimeMillis() > expireTime ){
+            filterChain.doFilter(request,response);
+            return;
+        }
         User loginUser = userMapper.selectById(Integer.parseInt(userId));
 
-        if(loginUser == null) throw new UsernameNotFoundException("用户不存在");
+        if(loginUser == null) {
+            filterChain.doFilter(request,response);
+            return ;
+        }
 
         UserDetailsImpl userDetails = new UserDetailsImpl(loginUser);
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, null);

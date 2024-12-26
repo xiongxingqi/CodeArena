@@ -46,6 +46,7 @@ public class UserAccountController {
     @Operation(summary = "用户注册接口")
     public Result<Object> register(@Parameter(name = "userRegisterDTO",required = true) @RequestBody UserRegisterDTO userRegisterDTO){
         return userService.register(userRegisterDTO.getUsername(),userRegisterDTO.getPassword(),userRegisterDTO.getConfirmedPassword());
+
     }
 
 }

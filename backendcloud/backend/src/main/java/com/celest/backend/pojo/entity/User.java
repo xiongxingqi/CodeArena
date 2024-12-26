@@ -18,4 +18,5 @@ public class User {
     private  String password;
     private  Integer rating;
     private  String photo;
+    private String openid;
 }

@@ -21,6 +21,8 @@ public class NoAuthorizationEntryPoint implements AuthenticationEntryPoint {
                 || authException instanceof BadCredentialsException
                 ||authException instanceof InsufficientAuthenticationException) {
             log.info("凭证失效");
+            response.setHeader("Access-Control-Allow-Origin", "*");
+
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }else {
             log.error(authException.getMessage());

@@ -39,7 +39,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizationRequests -> authorizationRequests
                         //配置访问权限
                         .requestMatchers("/api/user/account/token", "/api/user/account/register","/doc.html",
-                                "/swagger-ui/**","/v3/**","/error","/websocket/**","/match/startGame","/botMove/setDirection")
+                                "/swagger-ui/**","/v3/**","/error","/websocket/**","/match/startGame",
+                                "/botMove/setDirection","/api/acwing/web/login/applyCode",
+                                "/api/acwing/web/login/redirect")
 //                        .access(IpAddressAuthorizationManager.hasIpAddress("127.0.0.1")) 配置发访问IP的地址限制
                         .permitAll()
                         .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()

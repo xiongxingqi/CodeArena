@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
         }
 
         String encode = passwordEncoder.encode(password);
-        User user = new User(null,username,encode,1500,null);
+        User user = new User(null,username,encode,1500,null,null);
 
         userMapper.insert(user);
 
